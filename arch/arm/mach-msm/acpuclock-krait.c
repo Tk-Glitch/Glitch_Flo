@@ -70,7 +70,7 @@ static void set_pri_clk_src(struct scalable *sc, u32 pri_src_sel)
 }
 
 /* Select a source on the secondary MUX. */
-static void __cpuinit set_sec_clk_src(struct scalable *sc, u32 sec_src_sel)
+static void set_sec_clk_src(struct scalable *sc, u32 sec_src_sel)
 {
 	u32 regval;
 
@@ -593,7 +593,7 @@ static struct acpuclk_data acpuclk_krait_data = {
 };
 
 /* Initialize a HFPLL at a given rate and enable it. */
-static void __cpuinit hfpll_init(struct scalable *sc,
+static void hfpll_init(struct scalable *sc,
 			      const struct core_speed *tgt_s)
 {
 	dev_dbg(drv.dev, "Initializing HFPLL%d\n", sc - drv.scalable);
@@ -619,7 +619,7 @@ static void __cpuinit hfpll_init(struct scalable *sc,
 	hfpll_set_rate(sc, tgt_s);
 }
 
-static int __cpuinit rpm_regulator_init(struct scalable *sc, enum vregs vreg,
+static int rpm_regulator_init(struct scalable *sc, enum vregs vreg,
 					 int vdd, bool enable)
 {
 	int ret;
@@ -659,7 +659,7 @@ err_get:
 	return ret;
 }
 
-static void __cpuinit rpm_regulator_cleanup(struct scalable *sc,
+static void rpm_regulator_cleanup(struct scalable *sc,
 						enum vregs vreg)
 {
 	if (!sc->vreg[vreg].rpm_reg)
@@ -670,7 +670,7 @@ static void __cpuinit rpm_regulator_cleanup(struct scalable *sc,
 }
 
 /* Voltage regulator initialization. */
-static int __cpuinit regulator_init(struct scalable *sc,
+static int regulator_init(struct scalable *sc,
 				const struct acpu_level *acpu_level)
 {
 	int ret, vdd_mem, vdd_dig, vdd_core;
@@ -751,7 +751,7 @@ err_mem:
 	return ret;
 }
 
-static void __cpuinit regulator_cleanup(struct scalable *sc)
+static void regulator_cleanup(struct scalable *sc)
 {
 	regulator_disable(sc->vreg[VREG_CORE].reg);
 	regulator_put(sc->vreg[VREG_CORE].reg);
@@ -762,7 +762,7 @@ static void __cpuinit regulator_cleanup(struct scalable *sc)
 }
 
 /* Set initial rate for a given core. */
-static int __cpuinit init_clock_sources(struct scalable *sc,
+static int init_clock_sources(struct scalable *sc,
 					 const struct core_speed *tgt_s)
 {
 	u32 regval;
@@ -796,21 +796,21 @@ static int __cpuinit init_clock_sources(struct scalable *sc,
 	return 0;
 }
 
-static void __cpuinit fill_cur_core_speed(struct core_speed *s,
+static void fill_cur_core_speed(struct core_speed *s,
 					  struct scalable *sc)
 {
 	s->pri_src_sel = get_l2_indirect_reg(sc->l2cpmr_iaddr) & 0x3;
 	s->pll_l_val = readl_relaxed(sc->hfpll_base + drv.hfpll_data->l_offset);
 }
 
-static bool __cpuinit speed_equal(const struct core_speed *s1,
+static bool speed_equal(const struct core_speed *s1,
 				  const struct core_speed *s2)
 {
 	return (s1->pri_src_sel == s2->pri_src_sel &&
 		s1->pll_l_val == s2->pll_l_val);
 }
 
-static const struct acpu_level __cpuinit *find_cur_acpu_level(int cpu)
+static const struct acpu_level *find_cur_acpu_level(int cpu)
 {
 	struct scalable *sc = &drv.scalable[cpu];
 	const struct acpu_level *l;
@@ -836,7 +836,7 @@ static const struct l2_level __init *find_cur_l2_level(void)
 	return NULL;
 }
 
-static const struct acpu_level __cpuinit *find_min_acpu_level(void)
+static const struct acpu_level *find_min_acpu_level(void)
 {
 	struct acpu_level *l;
 
@@ -847,7 +847,7 @@ static const struct acpu_level __cpuinit *find_min_acpu_level(void)
 	return NULL;
 }
 
-static int __cpuinit per_cpu_init(int cpu)
+static int per_cpu_init(int cpu)
 {
 	struct scalable *sc = &drv.scalable[cpu];
 	const struct acpu_level *acpu_level;
@@ -912,6 +912,71 @@ static void __init bus_init(const struct l2_level *l2_level)
 		dev_err(drv.dev, "initial bandwidth req failed (%d)\n", ret);
 }
 
+#ifdef CONFIG_USERSPACE_VOLTAGE_CONTROL
+
+#define MAX_VDD 1300
+#define MIN_VDD 700
+
+int get_num_freqs(void)
+{
+	int i;
+	int count = 0;
+	
+	for (i = 0; drv.acpu_freq_tbl[i].use_for_scaling; i++)
+		count++;
+		
+	return count;
+}
+
+ssize_t acpuclk_get_vdd_levels_str(char *buf) 
+{
+
+	int i, len = 0;
+
+	if (buf) {
+		for (i = 0; drv.acpu_freq_tbl[i].speed.khz; i++) {
+			if (drv.acpu_freq_tbl[i].use_for_scaling) {
+				len += sprintf(buf + len, "%lumhz: %i mV\n", drv.acpu_freq_tbl[i].speed.khz/1000,
+						drv.acpu_freq_tbl[i].vdd_core/1000 );
+			}
+		}
+	}
+	return len;
+}
+
+ssize_t acpuclk_set_vdd(char *buf) 
+{
+	unsigned int cur_volt;
+	char size_cur[get_num_freqs()];
+	int i;
+    int ret = 0;
+
+	if (!buf)
+		return -EINVAL;
+		
+	for (i = 0; i < ARRAY_SIZE(size_cur); i++) {
+		ret = sscanf(buf, "%d", &cur_volt);
+
+		if (ret != 1)
+			return -EINVAL;
+			
+		if (cur_volt > MAX_VDD) {
+			pr_info("Voltage Control: new volt is %d and its higher than %d so we set it to MAX_VDD(%d).\n", cur_volt, MAX_VDD, MAX_VDD);
+			cur_volt = MAX_VDD;
+		} else if (cur_volt < MIN_VDD) {
+			pr_info("Voltage Control: new volt is %d and its lower than %d so we set it to MIN_VDD(%d).\n", cur_volt, MIN_VDD, MIN_VDD);
+			cur_volt = MIN_VDD;
+		}	
+				
+		drv.acpu_freq_tbl[i].vdd_core = cur_volt*1000;
+			
+		ret = sscanf(buf, "%s", size_cur);
+		buf += (strlen(size_cur)+1);
+	}
+	return ret;
+}
+#endif
+
 #ifdef CONFIG_CPU_FREQ_MSM
 static struct cpufreq_frequency_table freq_table[NR_CPUS][35];
 
@@ -959,7 +1024,7 @@ static void __init dcvs_freq_init(void)
 				drv.acpu_freq_tbl[i].vdd_core / 1000);
 }
 
-static int __cpuinit acpuclk_cpu_callback(struct notifier_block *nfb,
+static int acpuclk_cpu_callback(struct notifier_block *nfb,
 					    unsigned long action, void *hcpu)
 {
 	static int prev_khz[NR_CPUS];
@@ -1011,7 +1076,7 @@ static int __cpuinit acpuclk_cpu_callback(struct notifier_block *nfb,
 	return NOTIFY_OK;
 }
 
-static struct notifier_block __cpuinitdata acpuclk_cpu_notifier = {
+static struct notifier_block acpuclk_cpu_notifier = {
 	.notifier_call = acpuclk_cpu_callback,
 };
 
