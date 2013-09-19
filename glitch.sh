@@ -100,7 +100,7 @@ mkdir -p $KERNEL_DIR/release/Flashable-flo-CMfriendly
 REL=CM10.2-flo-Glitch-$(date +%Y%m%d.%H%M).zip
 	
 	zip -q -r ${REL} kernel META-INF system
-	sha256sum ${REL} > ${REL}.sha256sum
+	#sha256sum ${REL} > ${REL}.sha256sum
 	mv ${REL}* $KERNEL_DIR/release/Flashable-flo-CMfriendly/
 
 rm kernel/zImage
