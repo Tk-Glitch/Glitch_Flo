@@ -1,4 +1,6 @@
-ui_print("Glitch Updater for TK");
+ui_print("---------------------------------------");
+ui_print("|        Glitch kernel for flo        |");
+ui_print("---------------------------------------");
 ui_print("Nexus 7 (2013) Kernel...");
 set_progress(1.000000);
 ui_print("Mount /System Folder...");
@@ -13,7 +15,6 @@ set_perm(0, 0, 0777, "/tmp/mkbootimg.sh");
 set_perm(0, 0, 0777, "/tmp/mkbootimg");
 set_perm(0, 0, 0777, "/tmp/unpackbootimg");
 set_perm(0, 0, 0777, "/tmp/busybox");
-#set_perm_recursive(0, 2000, 0777, 0777, "/system/etc/glitch-config.sh");
 
 ui_print("Installing kernel...");
 run_program("/tmp/busybox", "dd", "if=/dev/block/mmcblk0p14", "of=/tmp/boot.img");
