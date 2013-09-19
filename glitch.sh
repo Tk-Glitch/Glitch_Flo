@@ -120,9 +120,16 @@ if [ "$1" = clean ] ; then
 
 else
 
+if [ "$1" = kclean ] ; then
+    rm -fr "$KERNEL_DIR"/release/Flashable-flo-CMfriendly/*
+    echo "Built kernels cleaned"
+
+else
+
 time {
 
     build flo
 
 }
+fi
 fi
