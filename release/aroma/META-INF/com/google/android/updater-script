@@ -131,6 +131,8 @@ package_extract_dir("system", "/system");
 set_perm_recursive(0, 2000, 0777, 0777, "/system/etc/init.d/99glitch");
 set_perm_recursive(0, 0, 0644, 0644, "/system/lib/modules");
 set_perm_recursive(0, 2000, 0755, 0755, "/system/bin/fstrim");
+set_perm_recursive(0, 2000, 0755, 0755, "/system/bin/mpdecision");
+set_perm_recursive(0, 2000, 0755, 0755, "/system/bin/thermald");
 
 set_perm(0, 0, 0777, "/tmp/buildconfig.sh");
 run_program("/tmp/buildconfig.sh");
