@@ -13,7 +13,8 @@ repo=~/android/system
 init="4.3"
 
 # Type of build (aroma or zImage)
-export build_type=""
+export build_type="aroma"
+#export build_type="zImage"
 
 export CM_REPO=$repo
 

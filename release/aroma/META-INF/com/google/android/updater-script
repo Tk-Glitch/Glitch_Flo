@@ -85,19 +85,19 @@ then
 endif;
 
 if
-    file_getprop("/tmp/aroma/mods.prop","item.0.4") == "1"
+    file_getprop("/tmp/aroma/mods.prop","item.0.3") == "1"
 then
     ui_print("DoubleTap2Wake enabled");
 endif;
 
 if
-   file_getprop("/tmp/aroma/mods.prop","item.0.6") == "1"
+   file_getprop("/tmp/aroma/mods.prop","item.0.4") == "1"
      then
    ui_print("Magnetic on/off disabled");
 endif;
 
 if
-   file_getprop("/tmp/aroma/mods.prop","item.0.7") == "0"
+   file_getprop("/tmp/aroma/mods.prop","item.0.5") == "0"
      then
    ui_print("fsync enabled");
 endif;
@@ -114,8 +114,10 @@ delete("/system/etc/init.d/99elementalx");
 delete("/system/etc/init.d/99glitch");
 delete("/system/etc/elementalx.conf");
 delete("/system/etc/glitch.conf");
+delete("/system/etc/settings.conf");
 delete("/system/etc/init.d/99zram.sh");
 delete("/system/lib/modules/cpufreq_limit.ko");
+delete("/system/bin/thermald");
 
 set_perm(0, 0, 0777, "/tmp/systemcheck.sh");
 run_program("/tmp/systemcheck.sh");
