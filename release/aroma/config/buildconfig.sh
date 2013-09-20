@@ -36,15 +36,6 @@ else
   echo "LID=1" >> $CONFIGFILE;
 fi
 
-#FSYNC
-FSYNC=`grep "item.0.8" /tmp/aroma/mods.prop | cut -d '=' -f2`
-echo -e "\n\n##### fsync Settings ######\n# 1 to enable fsync\n# 0 to disable fsync\n" >> $CONFIGFILE
-if [ $FSYNC = 0 ]; then
-  echo "FSYNC=1" >> $CONFIGFILE;
-else
-  echo "FSYNC=0" >> $CONFIGFILE;
-fi
-
 #GPU Governor
 GPU_GOV=`cat /tmp/aroma/gpugov.prop | cut -d '=' -f2`
 echo -e "\n\n##### GPU Governor #####\n# 1 Ondemand (default)" >> $CONFIGFILE

@@ -96,12 +96,6 @@ if
    ui_print("Magnetic on/off disabled");
 endif;
 
-if
-   file_getprop("/tmp/aroma/mods.prop","item.0.5") == "0"
-     then
-   ui_print("fsync enabled");
-endif;
-
 set_progress(0.3);
 
 

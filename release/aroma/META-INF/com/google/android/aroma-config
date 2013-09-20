@@ -206,7 +206,6 @@ checkbox(
   "Sweep2Sleep Only","Sweep across buttons to sleep device",1,
   "DoubleTap2Wake","Double tap screen to wake device",1,
   "Disable magnetic on/off","",0,
-  "Disable fsync","slight risk of data loss if system crashes",1
 );
 
 if file_getprop("/tmp/aroma/mods.prop","item.0.1") == "1" && file_getprop("/tmp/aroma/mods.prop","item.0.2") == "1"

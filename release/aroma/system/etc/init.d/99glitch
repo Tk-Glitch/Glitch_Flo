@@ -51,12 +51,6 @@ else
   echo Magnetic on/off enabled >> $KERNEL_LOGFILE;
 fi
 
-#fsync
-if [ "`grep FSYNC=1 $KERNEL_CONF`" ]; then
-  echo 1 > /sys/module/sync/parameters/fsync_enabled;
-  echo fsync enabled >> $KERNEL_LOGFILE;
-fi
-
 #fstrim
 fstrim -v /cache | tee -a $KERNEL_LOGFILE;
 fstrim -v /data | tee -a $KERNEL_LOGFILE;
