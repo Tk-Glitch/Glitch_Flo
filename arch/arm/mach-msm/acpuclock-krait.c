@@ -45,7 +45,7 @@
 #define PRI_SRC_SEL_HFPLL	1
 #define PRI_SRC_SEL_HFPLL_DIV2	2
 
-#define FREQ_TABLE_SIZE    46
+#define FREQ_TABLE_SIZE    48
 
 /** elementalx defs  **/
 

@@ -6,34 +6,34 @@ val0=$(cat /tmp/aroma-data/freq0.prop | cut -d '=' -f2)
 case $val0 in
 
 	1)
-	  max_oc0="max_oc0=1134000"
-	  ;;
-	2)
-	  max_oc0="max_oc0=1350000"
-	  ;;
-	3)
 	  max_oc0="max_oc0=1512000"
 	  ;;
-	4)
+	2)
+	  max_oc0="max_oc0=1620000"
+	  ;;
+	3)
 	  max_oc0="max_oc0=1728000"
 	  ;;
-  	5)
+	4)
 	  max_oc0="max_oc0=1836000"
 	  ;;
-  	6)
+  	5)
 	  max_oc0="max_oc0=1890000"
 	  ;;
-	7)
+  	6)
 	  max_oc0="max_oc0=1944000"
 	  ;;
-	8)
+	7)
 	  max_oc0="max_oc0=1998000"
 	  ;;
-	9)
+	8)
 	  max_oc0="max_oc0=2052000"
 	  ;;
-	10)
+	9)
 	  max_oc0="max_oc0=2106000"
+	  ;;
+	10)
+	  max_oc0="max_oc0=2160000"
 	  ;;
 	11)
 	  max_oc0="max_oc0=2214000"
@@ -56,34 +56,34 @@ val1=$(cat /tmp/aroma-data/freq1.prop | cut -d '=' -f2)
 case $val1 in
 
 	1)
-	  max_oc1="max_oc1=1134000"
-	  ;;
-	2)
-	  max_oc1="max_oc1=1350000"
-	  ;;
-	3)
 	  max_oc1="max_oc1=1512000"
 	  ;;
-	4)
+	2)
+	  max_oc1="max_oc1=1620000"
+	  ;;
+	3)
 	  max_oc1="max_oc1=1728000"
 	  ;;
-  	5)
+	4)
 	  max_oc1="max_oc1=1836000"
 	  ;;
-  	6)
+  	5)
 	  max_oc1="max_oc1=1890000"
 	  ;;
-	7)
+  	6)
 	  max_oc1="max_oc1=1944000"
 	  ;;
-	8)
+	7)
 	  max_oc1="max_oc1=1998000"
 	  ;;
-	9)
+	8)
 	  max_oc1="max_oc1=2052000"
 	  ;;
-	10)
+	9)
 	  max_oc1="max_oc1=2106000"
+	  ;;
+	10)
+	  max_oc1="max_oc1=2160000"
 	  ;;
 	11)
 	  max_oc1="max_oc1=2214000"
@@ -100,34 +100,34 @@ val2=$(cat /tmp/aroma-data/freq2.prop | cut -d '=' -f2)
 case $val2 in
 
 	1)
-	  max_oc2="max_oc2=1134000"
-	  ;;
-	2)
-	  max_oc2="max_oc2=1350000"
-	  ;;
-	3)
 	  max_oc2="max_oc2=1512000"
 	  ;;
-	4)
+	2)
+	  max_oc2="max_oc2=1620000"
+	  ;;
+	3)
 	  max_oc2="max_oc2=1728000"
 	  ;;
-  	5)
+	4)
 	  max_oc2="max_oc2=1836000"
 	  ;;
-  	6)
+  	5)
 	  max_oc2="max_oc2=1890000"
 	  ;;
-	7)
+  	6)
 	  max_oc2="max_oc2=1944000"
 	  ;;
-	8)
+	7)
 	  max_oc2="max_oc2=1998000"
 	  ;;
-	9)
+	8)
 	  max_oc2="max_oc2=2052000"
 	  ;;
-	10)
+	9)
 	  max_oc2="max_oc2=2106000"
+	  ;;
+	10)
+	  max_oc2="max_oc2=2160000"
 	  ;;
 	11)
 	  max_oc2="max_oc2=2214000"
@@ -144,34 +144,34 @@ val3=$(cat /tmp/aroma-data/freq3.prop | cut -d '=' -f2)
 case $val3 in
 
 	1)
-	  max_oc3="max_oc3=1134000"
-	  ;;
-	2)
-	  max_oc3="max_oc3=1350000"
-	  ;;
-	3)
 	  max_oc3="max_oc3=1512000"
 	  ;;
-	4)
-	  max_oc0="max_oc3=1728000"
+	2)
+	  max_oc3="max_oc3=1620000"
 	  ;;
-  	5)
+	3)
+	  max_oc3="max_oc3=1728000"
+	  ;;
+	4)
 	  max_oc0="max_oc3=1836000"
 	  ;;
-  	6)
-	  max_oc3="max_oc3=1890000"
+  	5)
+	  max_oc0="max_oc3=1890000"
 	  ;;
-	7)
+  	6)
 	  max_oc3="max_oc3=1944000"
 	  ;;
-	8)
+	7)
 	  max_oc3="max_oc3=1998000"
 	  ;;
-	9)
+	8)
 	  max_oc3="max_oc3=2052000"
 	  ;;
-	10)
+	9)
 	  max_oc3="max_oc3=2106000"
+	  ;;
+	10)
+	  max_oc3="max_oc3=2160000"
 	  ;;
 	11)
 	  max_oc3="max_oc3=2214000"
