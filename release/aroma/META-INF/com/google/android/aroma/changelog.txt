@@ -1,0 +1,21 @@
+<b>Glitch kernel for flo</b>
+
+- Based on CyanogenMod 3.4.0 kernel source for MSM devices
+- CPU OC up to 2.3Ghz with undervolt support (using for example TricksterMod or FauxClock) - Default is 1566MHz
+- CPU governors : Faux's intellidemand, interactive, ondemand
+- I/O schedulers: noop, deadline, row, cfq, fiops, sio
+- Boosted L2/bus speed
+- GPU OC up to 627 MHz (available max frequencies : 128/200/320/450/487/504/545/600/627 MHz) - Default is 487 MHz
+- Faux Simple GPU governor support
+- Showp1984's msm_mpdecision hotplug driver
+- Faux SnakeCharmer support
+- Sweep2wake/Sweep2sleep/Doubletap2wake support
+- Supercurio's Color calibrator support
+- Fsync on/off support
+- FauxSound support
+- USB fast charging support (off by default)
+- Default read-ahead buffer is 1024
+- Msm thermal enhancements
+- Optimized algorithms
+- Compiled with latest SaberMod 4.8.x toolchain
+

@@ -1,29 +1,26 @@
 #!/bin/bash
 
-# CM10 repo path :
-repo=~/android/system
-
-# Choose Android 4.1.x or 4.2.x initrd :
-#init="4.1"
-init="4.3"
-
-# Glitch kernel build-script parameters :
-#
-# "device" : build for a supported device (Flo).
-# You can list all devices you want to build, separated by a space.
+# Glitch kernel build-script
 #
 # clean : clean the build directory.
+
+# CM repo path :
+repo=~/android/system
+
+# Choose Android version :
+#init="4.1"
+#init="4.2"
+init="4.3"
+
+# Type of build (aroma or zImage)
+export build_type="aroma"
 
 export CM_REPO=$repo
 
 # Toolchain :
 export ARCH="arm"
-
-#export CROSS_PREFIX="$repo/prebuilts/gcc/linux-x86/arm/arm-eabi-4.8-linaro/bin/arm-eabi-"
 #export CROSS_PREFIX="$repo/prebuilts/gcc/linux-x86/arm/arm-eabi-4.6/bin/arm-eabi-"
 export CROSS_PREFIX="$repo/prebuilts/gcc/linux-x86/arm/sabermod-androideabi-4.8/bin/arm-linux-androideabi-"
-#export CROSS_PREFIX="$repo/prebuilts/gcc/linux-x86/arm/linaro_4.8.2-2013.09/bin/arm-gnueabi-"
-
 
 setup ()
 {
@@ -38,7 +35,7 @@ setup ()
     case `uname -s` in
         Darwin)
             KERNEL_DIR="$(dirname "$(greadlink -f "$0")")"
-            CROSS_PREFIX="$repo/prebuilts/gcc/darwin-x86/arm/arm-eabi-4.6/bin/arm-eabi-"
+            CROSS_PREFIX="$repo/prebuilts/gcc/darwin-x86/arm/arm-eabi-4.8/bin/arm-eabi-"
             ;;
         *)
             KERNEL_DIR="$(dirname "$(readlink -f "$0")")"
@@ -80,35 +77,63 @@ build ()
 
 echo "copying modules and zImage"
 
+
+if [ "$build_type" = "aroma" ] ; then
+mkdir -p $KERNEL_DIR/release/aroma/system/lib/modules/
+else
 mkdir -p $KERNEL_DIR/release/zimage/system/lib/modules/
+fi
 
 cd $target_dir
 
+if [ "$build_type" = "aroma" ] ; then
+find -name '*.ko' -exec cp -av {} $KERNEL_DIR/release/aroma/system/lib/modules/ \;
+"$CROSS_PREFIX"strip --strip-unneeded $KERNEL_DIR/release/aroma/system/lib/modules/*
+else
 find -name '*.ko' -exec cp -av {} $KERNEL_DIR/release/zimage/system/lib/modules/ \;
 "$CROSS_PREFIX"strip --strip-unneeded $KERNEL_DIR/release/zimage/system/lib/modules/*
+fi
 
 cd $KERNEL_DIR
 
+if [ "$build_type" = "aroma" ] ; then
+mv $target_dir/arch/arm/boot/zImage $KERNEL_DIR/release/aroma/boot/glitch.zImage
+else
 mv $target_dir/arch/arm/boot/zImage $KERNEL_DIR/release/zimage/kernel/zImage
+fi
 
 echo "packaging it up"
 
-cd release/zimage && {
+if [ "$build_type" = "aroma" ] ; then
+cd release/aroma
+else
+cd release/zimage
+fi
 
 mkdir -p $KERNEL_DIR/release/Flashable-flo-CMfriendly
 
-REL=CM10.2-flo-Glitch-$(date +%Y%m%d.%H%M).zip
+REL=Glitch-flo-$(date +%Y%m%d-r%H).zip
 	
+	if [ "$build_type" = "aroma" ] ; then
+	zip -q -r ${REL} boot config META-INF system
+	else
 	zip -q -r ${REL} kernel META-INF system
+	fi
+
 	#sha256sum ${REL} > ${REL}.sha256sum
 	mv ${REL}* $KERNEL_DIR/release/Flashable-flo-CMfriendly/
 
+if [ "$build_type" = "aroma" ] ; then
+rm boot/glitch.zImage
+else
 rm kernel/zImage
+fi
+
 rm -r system/lib/modules/*
-}
 
 cd $KERNEL_DIR
 
+echo ""
 echo ${REL}
 }
     
@@ -116,6 +141,11 @@ setup
 
 if [ "$1" = clean ] ; then
     rm -fr "$BUILD_DIR"/*
+    cd release
+    find . -name "*.*~" -print0
+    find . -name "*~" -print0
+    cd $KERNEL_DIR
+    echo ""
     echo "Old build cleaned"
 
 else

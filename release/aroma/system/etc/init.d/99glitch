@@ -1,0 +1,79 @@
+#!/system/bin/sh
+
+KERNEL_CONF="/system/etc/settings.conf"
+KERNEL_LOGFILE="/data/local/tmp/glitch-kernel.log"
+
+if [ -f $KERNEL_LOGFILE ]; then
+  mv $KERNEL_LOGFILE $KERNEL_LOGFILE.2;
+fi
+
+echo $(date) >> $KERNEL_LOGFILE
+
+#Set CPU_FREQ
+MAXF="`cat /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq`"
+echo $MAXF > /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq;
+echo $MAXF > /sys/devices/system/cpu/cpu1/cpufreq/scaling_max_freq;
+echo $MAXF > /sys/devices/system/cpu/cpu2/cpufreq/scaling_max_freq;
+echo $MAXF > /sys/devices/system/cpu/cpu3/cpufreq/scaling_max_freq;
+echo 384000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq; 
+echo 384000 > /sys/devices/system/cpu/cpu1/cpufreq/scaling_min_freq;
+echo 384000 > /sys/devices/system/cpu/cpu2/cpufreq/scaling_min_freq;
+echo 384000 > /sys/devices/system/cpu/cpu3/cpufreq/scaling_min_freq;
+echo Max CPU Frequency: $MAXF >> $KERNEL_LOGFILE
+
+#Set SWEEP2WAKE
+if [ "`grep SWEEP2WAKE=0 $KERNEL_CONF`" ]; then
+  echo 0 > /sys/android_touch/sweep2wake;
+  echo Sweep2wake disabled >> $KERNEL_LOGFILE;
+elif [ "`grep SWEEP2WAKE=2 $KERNEL_CONF`" ]; then
+  echo 2 > /sys/android_touch/sweep2wake;
+  echo Sweep2sleep enabled >> $KERNEL_LOGFILE;
+else
+  echo 1 > /sys/android_touch/sweep2wake;
+  echo Sweep2wake enabled >> $KERNEL_LOGFILE;
+fi
+
+#Set DOUBLETAP2WAKE
+if [ "`grep DT2WAKE=1 $KERNEL_CONF`" ]; then
+  echo 1 > /sys/android_touch/doubletap2wake;
+  echo DoubleTap2Wake enabled >> $KERNEL_LOGFILE;
+else
+  echo 0 > /sys/android_touch/doubletap2wake;
+  echo DoubleTap2Wake disabled >> $KERNEL_LOGFILE;
+fi
+
+#Set Magnetic on/off
+if [ "`grep LID=0 $KERNEL_CONF`" ]; then
+  echo 0 > /sys/module/lid/parameters/enable_lid;
+  echo Magnetic on/off disabled >> $KERNEL_LOGFILE;
+else
+  echo 1 > /sys/module/lid/parameters/enable_lid;
+  echo Magnetic on/off enabled >> $KERNEL_LOGFILE;
+fi
+
+#fsync
+if [ "`grep FSYNC=1 $KERNEL_CONF`" ]; then
+  echo 1 > /sys/module/sync/parameters/fsync_enabled;
+  echo fsync enabled >> $KERNEL_LOGFILE;
+fi
+
+#fstrim
+fstrim -v /cache | tee -a $KERNEL_LOGFILE;
+fstrim -v /data | tee -a $KERNEL_LOGFILE;
+
+#GPU Governor settings
+if [ "`grep GPU_GOV=2 $KERNEL_CONF`" ]; then
+  echo simple > /sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/pwrscale/trustzone/governor;
+  echo Simple GPU Governor >> $KERNEL_LOGFILE;
+elif [ "`grep GPU_GOV=3 $KERNEL_CONF`" ]; then
+  echo performance > /sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/pwrscale/trustzone/governor;
+  echo Performance GPU Governor >> $KERNEL_LOGFILE;
+else
+  echo ondemand > /sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/pwrscale/trustzone/governor;
+  echo Ondemand GPU Governor >> $KERNEL_LOGFILE;
+fi
+
+#exFAT support
+  insmod /system/lib/modules/exfat.ko
+
+exit 0
