@@ -153,10 +153,10 @@ case $val3 in
 	  max_oc3="max_oc3=1728000"
 	  ;;
 	4)
-	  max_oc0="max_oc3=1836000"
+	  max_oc3="max_oc3=1836000"
 	  ;;
   	5)
-	  max_oc0="max_oc3=1890000"
+	  max_oc3="max_oc3=1890000"
 	  ;;
   	6)
 	  max_oc3="max_oc3=1944000"
