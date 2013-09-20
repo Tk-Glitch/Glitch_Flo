@@ -86,19 +86,19 @@ then
 
 selectbox(
   "Maximum CPU Frequency","Select maximum CPU frequency\n","@personalize","freq0.prop",
-  "1512MHz","(stock)",1,
+  "1512MHz","(stock)",0,
   "1620MHz","",0,
-  "1728MHz","",0,
+  "1728MHz","(balanced)",1,
   "1836MHz","",0,
-  "1890MHz","",0,
+  "1890MHz","(performance)",0,
   "1944MHz","",0,
-  "1998MHz","",0,
+  "1998MHz","(high)",0,
   "2052MHz","",0,
-  "2106MHz","(high)",0,
+  "2106MHz","(very high)",0,
   "2160MHz","",0,
-  "2214MHz","(very high)",0,
+  "2214MHz","(extreme)",0,
   "2268MHz","",0,
-  "2322MHz","(extreme)",0
+  "2322MHz","(godly)",0
 );
 
 endif;
@@ -108,70 +108,70 @@ then
 
 selectbox(
   "Maximum CPU Frequency","Select maximum frequency for first CPU core\n","@personalize","freq0.prop",
-  "1512MHz","(stock)",1,
+  "1512MHz","(stock)",0,
   "1620MHz","",0,
-  "1728MHz","",0,
+  "1728MHz","(balanced)",1,
   "1836MHz","",0,
-  "1890MHz","",0,
+  "1890MHz","(performance)",0,
   "1944MHz","",0,
-  "1998MHz","",0,
+  "1998MHz","(high)",0,
   "2052MHz","",0,
-  "2106MHz","(high)",0,
+  "2106MHz","(very high)",0,
   "2160MHz","",0,
-  "2214MHz","(very high)",0,
+  "2214MHz","(extreme)",0,
   "2268MHz","",0,
-  "2322MHz","(extreme)",0
+  "2322MHz","(godly)",0
 );
 
 selectbox(
   "Maximum CPU Frequency","Select maximum frequency for second CPU core\n","@personalize","freq1.prop",
-  "1512MHz","(stock)",1,
+  "1512MHz","(stock)",0,
   "1620MHz","",0,
-  "1728MHz","",0,
+  "1728MHz","(balanced)",1,
   "1836MHz","",0,
-  "1890MHz","",0,
+  "1890MHz","(performance)",0,
   "1944MHz","",0,
-  "1998MHz","",0,
+  "1998MHz","(high)",0,
   "2052MHz","",0,
-  "2106MHz","(high)",0,
+  "2106MHz","(very high)",0,
   "2160MHz","",0,
-  "2214MHz","(very high)",0,
+  "2214MHz","(extreme)",0,
   "2268MHz","",0,
-  "2322MHz","(extreme)",0
+  "2322MHz","(godly)",0
 );
 
 selectbox(
   "Maximum CPU Frequency","Select maximum frequency for third CPU core\n","@personalize","freq2.prop",
-  "1512MHz","(stock)",1,
+  "1512MHz","(stock)",0,
   "1620MHz","",0,
-  "1728MHz","",0,
+  "1728MHz","(balanced)",1,
   "1836MHz","",0,
-  "1890MHz","",0,
+  "1890MHz","(performance)",0,
   "1944MHz","",0,
-  "1998MHz","",0,
+  "1998MHz","(high)",0,
   "2052MHz","",0,
-  "2106MHz","(high)",0,
+  "2106MHz","(very high)",0,
   "2160MHz","",0,
-  "2214MHz","(very high)",0,
+  "2214MHz","(extreme)",0,
   "2268MHz","",0,
-  "2322MHz","(extreme)",0
+  "2322MHz","(godly)",0
 );
 
 selectbox(
   "Maximum CPU Frequency","Select maximum frequency for fourth CPU core\n","@personalize","freq3.prop",
-  "1512MHz","(stock)",1,
+  "1512MHz","(stock)",0,
   "1620MHz","",0,
-  "1728MHz","",0,
+  "1728MHz","(balanced)",1,
   "1836MHz","",0,
-  "1890MHz","",0,
+  "1890MHz","(performance)",0,
   "1944MHz","",0,
-  "1998MHz","",0,
+  "1998MHz","(high)",0,
   "2052MHz","",0,
-  "2106MHz","(high)",0,
+  "2106MHz","(very high)",0,
   "2160MHz","",0,
-  "2214MHz","(very high)",0,
+  "2214MHz","(extreme)",0,
   "2268MHz","",0,
-  "2322MHz","(extreme)",0
+  "2322MHz","(godly)",0
 );
 
 endif;
@@ -179,8 +179,8 @@ endif;
 selectbox(
   "Select CPU optimization level","Overclocks L2 cache and bus bandwidth. If you experience instability, choose stock\n","@personalize","opt.prop",
   "stock","",0,
-  "high","",1,
-  "ultra","",0
+  "fast","",1,
+  "faster","",0
 );
 
 selectbox(
