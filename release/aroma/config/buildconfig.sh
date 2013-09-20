@@ -17,7 +17,7 @@ else
 fi
 
 #DT2W
-DT2W=`grep "item.0.4" /tmp/aroma/mods.prop | cut -d '=' -f2`
+DT2W=`grep "item.0.3" /tmp/aroma/mods.prop | cut -d '=' -f2`
 echo -e "\n\n##### DoubleTap2Wake Settings #####\n# 0 to disable DoubleTap2Wake" >> $CONFIGFILE
 echo -e "# 1 to enable DoubleTap2Wake\n" >> $CONFIGFILE
 if [ $DT2W = 1 ]; then
@@ -27,7 +27,7 @@ else
 fi
 
 #Magnetic on/off
-LID=`grep "item.0.6" /tmp/aroma/mods.prop | cut -d '=' -f2`
+LID=`grep "item.0.4" /tmp/aroma/mods.prop | cut -d '=' -f2`
 echo -e "\n\n##### Magnetic on/off Settings #####\n# 0 to disable Magnetic on/off" >> $CONFIGFILE
 echo -e "# 1 to enable Magnetic on/off\n" >> $CONFIGFILE
 if [ $LID = 1 ]; then
