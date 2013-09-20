@@ -13,7 +13,7 @@ repo=~/android/system
 init="4.3"
 
 # Type of build (aroma or zImage)
-export build_type="aroma"
+export build_type=""
 
 export CM_REPO=$repo
 
@@ -142,8 +142,8 @@ setup
 if [ "$1" = clean ] ; then
     rm -fr "$BUILD_DIR"/*
     cd release
-    find . -name "*.*~" -print0
-    find . -name "*~" -print0
+    rm `find ./ -name '*.*~'` -rf
+    rm `find ./ -name '*~'` -rf
     cd $KERNEL_DIR
     echo ""
     echo "Old build cleaned"
