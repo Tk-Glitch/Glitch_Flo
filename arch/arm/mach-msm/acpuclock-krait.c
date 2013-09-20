@@ -45,15 +45,15 @@
 #define PRI_SRC_SEL_HFPLL	1
 #define PRI_SRC_SEL_HFPLL_DIV2	2
 
-#define FREQ_TABLE_SIZE    35
+#define FREQ_TABLE_SIZE    46
 
 /** elementalx defs  **/
 
 int uv_bin = 0;
-uint32_t arg_max_oc0 = 1566000;
-uint32_t arg_max_oc1 = 1566000;
-uint32_t arg_max_oc2 = 1566000;
-uint32_t arg_max_oc3 = 1566000;
+uint32_t arg_max_oc0 = 1512000;
+uint32_t arg_max_oc1 = 1512000;
+uint32_t arg_max_oc2 = 1512000;
+uint32_t arg_max_oc3 = 1512000;
 
 /* boot arg max_oc */
 static int __init cpufreq_read_arg_max_oc0(char *max_oc0)
@@ -62,7 +62,7 @@ static int __init cpufreq_read_arg_max_oc0(char *max_oc0)
 	int err;
 	err = strict_strtoul(max_oc0, 0, &ui_khz);
 	if (err) {
-		arg_max_oc0 = 1566000;
+		arg_max_oc0 = 1512000;
 		printk(KERN_INFO "[glitch]: max_oc0='%i'\n", arg_max_oc0);
 		return 1;
 	}
@@ -79,7 +79,7 @@ static int __init cpufreq_read_arg_max_oc1(char *max_oc1)
 	int err;
 	err = strict_strtoul(max_oc1, 0, &ui_khz);
 	if (err) {
-		arg_max_oc1 = 1566000;
+		arg_max_oc1 = 1512000;
 		printk(KERN_INFO "[glitch]: max_oc1='%i'\n", arg_max_oc1);
 		return 1;
 	}
@@ -96,7 +96,7 @@ static int __init cpufreq_read_arg_max_oc2(char *max_oc2)
 	int err;
 	err = strict_strtoul(max_oc2, 0, &ui_khz);
 	if (err) {
-		arg_max_oc2 = 1566000;
+		arg_max_oc2 = 1512000;
 		printk(KERN_INFO "[glitch]: max_oc2='%i'\n", arg_max_oc2);
 		return 1;
 	}
@@ -113,7 +113,7 @@ static int __init cpufreq_read_arg_max_oc3(char *max_oc3)
 	int err;
 	err = strict_strtoul(max_oc3, 0, &ui_khz);
 	if (err) {
-		arg_max_oc3 = 1566000;
+		arg_max_oc3 = 1512000;
 		printk(KERN_INFO "[glitch]: max_oc3='%i'\n", arg_max_oc3);
 		return 1;
 	}

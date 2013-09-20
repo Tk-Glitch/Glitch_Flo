@@ -12,13 +12,13 @@ case $val0 in
 	  max_oc0="max_oc0=1350000"
 	  ;;
 	3)
-	  max_oc0="max_oc0=1566000"
+	  max_oc0="max_oc0=1512000"
 	  ;;
 	4)
-	  max_oc0="max_oc0=1674000"
+	  max_oc0="max_oc0=1728000"
 	  ;;
   	5)
-	  max_oc0="max_oc0=1782000"
+	  max_oc0="max_oc0=1836000"
 	  ;;
   	6)
 	  max_oc0="max_oc0=1890000"
@@ -62,13 +62,13 @@ case $val1 in
 	  max_oc1="max_oc1=1350000"
 	  ;;
 	3)
-	  max_oc1="max_oc1=1566000"
+	  max_oc1="max_oc1=1512000"
 	  ;;
 	4)
-	  max_oc1="max_oc1=1674000"
+	  max_oc1="max_oc1=1728000"
 	  ;;
   	5)
-	  max_oc1="max_oc1=1782000"
+	  max_oc1="max_oc1=1836000"
 	  ;;
   	6)
 	  max_oc1="max_oc1=1890000"
@@ -106,13 +106,13 @@ case $val2 in
 	  max_oc2="max_oc2=1350000"
 	  ;;
 	3)
-	  max_oc2="max_oc2=1566000"
+	  max_oc2="max_oc2=1512000"
 	  ;;
 	4)
-	  max_oc2="max_oc2=1674000"
+	  max_oc2="max_oc2=1728000"
 	  ;;
   	5)
-	  max_oc2="max_oc2=1782000"
+	  max_oc2="max_oc2=1836000"
 	  ;;
   	6)
 	  max_oc2="max_oc2=1890000"
@@ -150,13 +150,13 @@ case $val3 in
 	  max_oc3="max_oc3=1350000"
 	  ;;
 	3)
-	  max_oc3="max_oc3=1566000"
+	  max_oc3="max_oc3=1512000"
 	  ;;
 	4)
-	  max_oc0="max_oc3=1674000"
+	  max_oc0="max_oc3=1728000"
 	  ;;
   	5)
-	  max_oc0="max_oc3=1782000"
+	  max_oc0="max_oc3=1836000"
 	  ;;
   	6)
 	  max_oc3="max_oc3=1890000"
