@@ -19,7 +19,7 @@ export build_type="aroma"
 export CM_REPO=$repo
 
 # Toolchain :
-export ARCHFLAGS="arm"
+# export ARCHFLAGS="arm"
 export ARCH="arm"
 #export CROSS_PREFIX="$repo/prebuilts/gcc/linux-x86/arm/arm-eabi-4.6/bin/arm-eabi-"
 export CROSS_PREFIX="$repo/prebuilts/gcc/linux-x86/arm/sabermod-androideabi-4.8/bin/arm-linux-androideabi-"
