@@ -12,9 +12,6 @@
  * GNU General Public License for more details.
  *
  */
-
-#include <linux/workqueue.h>
-
 #ifndef SMUX_PRIVATE_H
 #define SMUX_PRIVATE_H
 
