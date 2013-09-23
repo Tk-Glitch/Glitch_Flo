@@ -55,6 +55,15 @@ fi
 fstrim -v /cache | tee -a $KERNEL_LOGFILE;
 fstrim -v /data | tee -a $KERNEL_LOGFILE;
 
+#thermal settings
+if [ "`grep THERM=1 $ELEX_CONF`" ]; then
+  echo 80,82,90,100 > /sys/module/msm_thermal/parameters/limit_temp_degC;
+  echo run cool >> $ELEX_LOGFILE;
+elif [ "`grep THERM=2 $ELEX_CONF`" ]; then
+  echo 85,90,97,105 > /sys/module/msm_thermal/parameters/limit_temp_degC;
+  echo run hot >> $ELEX_LOGFILE;
+fi
+
 #GPU Governor settings
 if [ "`grep GPU_GOV=2 $KERNEL_CONF`" ]; then
   echo simple > /sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/pwrscale/trustzone/governor;

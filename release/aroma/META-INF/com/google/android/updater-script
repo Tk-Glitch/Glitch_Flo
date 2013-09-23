@@ -67,6 +67,22 @@ if
 endif;
 
 if
+   file_getprop("/tmp/aroma/thermal.prop","selected.0") == "1"
+     then
+   ui_print("run cool");
+endif;
+if
+   file_getprop("/tmp/aroma/thermal.prop","selected.0") == "2"
+     then
+   ui_print("default thermal throttling");
+endif;
+if
+   file_getprop("/tmp/aroma/thermal.prop","selected.0") == "3"
+     then
+   ui_print("run hot");
+endif;
+
+if
    file_getprop("/tmp/aroma/gpugov.prop","selected.0") == "2"
      then
    ui_print("Simple GPU Governor");

@@ -36,6 +36,18 @@ else
   echo "LID=1" >> $CONFIGFILE;
 fi
 
+#THERMAL
+THERM=`cat /tmp/aroma/thermal.prop | cut -d '=' -f2`
+echo -e "\n\n##### Thermal Settings #####\n# 0 for default thremal throttling" >> $CONFIGFILE
+echo -e "# 1 to run cool\n# 2 to run hot\n" >> $CONFIGFILE
+if [ $THERM = 1 ]; then
+  echo "THERM=1" >> $CONFIGFILE;
+elif [ $THERM = 3 ]; then
+  echo "THERM=2" >> $CONFIGFILE;
+else
+  echo "THERM=0" >> $CONFIGFILE;
+fi
+
 #GPU Governor
 GPU_GOV=`cat /tmp/aroma/gpugov.prop | cut -d '=' -f2`
 echo -e "\n\n##### GPU Governor #####\n# 1 Ondemand (default)" >> $CONFIGFILE

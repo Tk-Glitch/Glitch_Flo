@@ -195,6 +195,13 @@ selectbox(
 );
 
 selectbox(
+  "Select thermal settings","Determines the amount of thermal throttling for the CPU\n","@personalize","thermal.prop",
+  "run cool","more thermal throttling",0,
+  "default","default thermal throttling",1,
+  "run hot","less thermal throttling",0
+);
+
+selectbox(
   "Select GPU governor","\n","@personalize","gpugov.prop",
   "Ondemand","(stock)",1,
   "Simple","",0
