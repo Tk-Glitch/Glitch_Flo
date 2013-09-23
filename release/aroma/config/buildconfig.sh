@@ -38,7 +38,7 @@ fi
 
 #THERMAL
 THERM=`cat /tmp/aroma/thermal.prop | cut -d '=' -f2`
-echo -e "\n\n##### Thermal Settings #####\n# 0 for default thremal throttling" >> $CONFIGFILE
+echo -e "\n\n##### Thermal Settings #####\n# 0 for default thermal throttling" >> $CONFIGFILE
 echo -e "# 1 to run cool\n# 2 to run hot\n" >> $CONFIGFILE
 if [ $THERM = 1 ]; then
   echo "THERM=1" >> $CONFIGFILE;
