@@ -9,7 +9,6 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * 2012 Enhanced by motley <motley.slate@gmail.com>
  */
 
 #include <linux/kernel.h>
@@ -25,328 +24,171 @@
 #include <linux/platform_device.h>
 #include <linux/of.h>
 #include <mach/cpufreq.h>
-#include <linux/reboot.h>
+#include <linux/earlysuspend.h> 
 
-/*
- * Controls
- * DEFAULT_THROTTLE_TEMP - default throttle temp at boot time
- * MAX_THROTTLE_TEMP - max able to be set by user
- * COOL_TEMP - temp in C where where we can slow down polling
- * COOL_TEMP_OFFSET_MS - number of ms to add to polling time when temps are cool
- * HOT_TEMP_OFFSET_MS - number of ms to subtract from polling time when temps are hot
- * DEFAULT_MIN_FREQ_INDEX - frequency table index for the lowest frequency to drop to during throttling
- * */
-#define DEFAULT_THROTTLE_TEMP		70
-#define MAX_THROTTLE_TEMP			80
-#define COOL_TEMP					45
-#define COOL_TEMP_OFFSET_MS			250
-#define HOT_TEMP_OFFSET_MS			250
-#define DEFAULT_MIN_FREQ_INDEX		7
+#define NO_RELEASE_TEMPERATURE 0
+#define NO_TRIGGER_TEMPERATURE -1
 
-static int enabled;
+#define N_TEMP_LIMITS 4
+
+static unsigned temp_hysteresis = 5;
+static unsigned int limit_temp_degC[N_TEMP_LIMITS] = { 80, 85, 92, 102 };
+static unsigned int limit_freq[N_TEMP_LIMITS] = { 1512000, 1350000, 918000, 384000 };
+
+module_param_array(limit_temp_degC, uint, NULL, 0644);
+module_param_array(limit_freq, uint, NULL, 0644);
+
+int throttled_bin = -1;
+
+module_param(throttled_bin, int, 0444);
+
 static struct msm_thermal_data msm_thermal_info;
-static uint32_t limited_max_freq = MSM_CPUFREQ_NO_LIMIT;
-static struct delayed_work check_temp_work;
+static struct delayed_work first_work;
+static struct work_struct trip_work;
 
-static unsigned int limit_idx;
-static unsigned int min_freq_index;
-static unsigned int limit_idx_high;
-static bool thermal_debug = false;
-static bool throttle_on = false;
-static unsigned int throttle_temp = DEFAULT_THROTTLE_TEMP;
-
-static struct cpufreq_frequency_table *table;
-
-static int msm_thermal_get_freq_table(void)
+static int max_freq(int throttled_bin)
 {
-	int ret = 0;
-	int i = 0;
-
-	table = cpufreq_frequency_get_table(0);
-	if (table == NULL) {
-		pr_debug("%s: error reading cpufreq table\n", __func__);
-		ret = -EINVAL;
-		goto fail;
-	}
-
-	while (table[i].frequency != CPUFREQ_TABLE_END)
-		i++;
-
-	min_freq_index = DEFAULT_MIN_FREQ_INDEX;
-	limit_idx_high = limit_idx = i - 1;
-	BUG_ON(limit_idx_high <= 0 || limit_idx_high <= min_freq_index);
-fail:
-	return ret;
+	if (throttled_bin < 0) return MSM_CPUFREQ_NO_LIMIT;
+	else return limit_freq[throttled_bin];
 }
 
-static int update_cpu_max_freq(int cpu, uint32_t max_freq)
+static int limit_temp(int throttled_bin)
 {
-	int ret = 0;
+	if (throttled_bin < 0) return limit_temp_degC[0];
+	else if (throttled_bin == N_TEMP_LIMITS-1) return NO_TRIGGER_TEMPERATURE;
+	else return limit_temp_degC[throttled_bin+1];
+}
 
-	ret = msm_cpufreq_set_freq_limits(cpu, MSM_CPUFREQ_NO_LIMIT, max_freq);
+static int release_temp(int throttled_bin)
+{
+	if (throttled_bin < 0) return NO_RELEASE_TEMPERATURE;
+	else return limit_temp_degC[throttled_bin] - temp_hysteresis;
+}
+
+static int update_cpu_max_freq(int cpu, int throttled_bin, unsigned temp)
+{
+	int ret;
+	int max_frequency = max_freq(throttled_bin);
+
+	ret = msm_cpufreq_set_freq_limits(cpu, MSM_CPUFREQ_NO_LIMIT, max_frequency);
 	if (ret)
 		return ret;
 
-	limited_max_freq = max_freq;
-	if (max_freq != MSM_CPUFREQ_NO_LIMIT) {
-		if (thermal_debug)
-			pr_info("msm_thermal: limiting cpu%d max frequency to %d\n",
-					cpu, max_freq);
-	} else {
-		if (thermal_debug)
-			pr_info("msm_thermal: max frequency reset for cpu%d\n", cpu);
-	}
 	ret = cpufreq_update_policy(cpu);
+	if (ret)
+		return ret;
+
+	if (max_frequency != MSM_CPUFREQ_NO_LIMIT) {
+		struct cpufreq_policy policy;
+
+		if ((ret = cpufreq_get_policy(&policy, cpu)) == 0)
+			ret = cpufreq_driver_target(&policy, max_frequency, CPUFREQ_RELATION_L);
+	}
+
+	if (max_frequency != MSM_CPUFREQ_NO_LIMIT)
+		pr_info("msm_thermal: limiting cpu%d max frequency to %d at %u degC\n",
+				cpu, max_frequency, temp);
+	else
+		pr_info("msm_thermal: Max frequency reset for cpu%d at %u degC\n", cpu, temp);
 
 	return ret;
+}
+
+static void
+update_all_cpus_max_freq_if_changed(int new_throttled_bin, unsigned temp)
+{
+	int cpu;
+	int ret;
+
+	if (throttled_bin == new_throttled_bin)
+		return;
+
+#ifdef CONFIG_PERFLOCK_BOOT_LOCK
+	release_boot_lock();
+#endif
+
+	throttled_bin = new_throttled_bin;
+	
+
+	for_each_possible_cpu(cpu) {
+		ret = update_cpu_max_freq(cpu, throttled_bin, temp);
+		if (ret)
+			pr_warn("Unable to limit cpu%d\n", cpu);
+	}
+}
+
+static void
+configure_sensor_trip_points(void)
+{
+	int trigger_temperature = limit_temp(throttled_bin);
+	int release_temperature = release_temp(throttled_bin);
+
+	pr_info("msm_thermal: setting trip range %d..%d on sensor %d.\n", release_temperature, 			trigger_temperature, msm_thermal_info.sensor_id); 
+	if (trigger_temperature != NO_TRIGGER_TEMPERATURE)
+		tsens_set_tz_warm_temp_degC(msm_thermal_info.sensor_id, trigger_temperature, &trip_work);
+
+	if (release_temperature != NO_RELEASE_TEMPERATURE)
+		tsens_set_tz_cool_temp_degC(msm_thermal_info.sensor_id, release_temperature, &trip_work);
+}
+
+static int
+select_throttled_bin(unsigned temp)
+{
+	int i;
+	int new_bin = -1;
+
+	for (i = 0; i < N_TEMP_LIMITS; i++) {
+		if (temp >= limit_temp_degC[i]) new_bin = i;
+	}
+
+	if (new_bin > throttled_bin) return new_bin;
+	if (temp <= release_temp(throttled_bin)) return new_bin;
+	return throttled_bin;
+}
+
+static void check_temp_and_throttle_if_needed(struct work_struct *work)
+{
+	struct tsens_device tsens_dev;
+	unsigned long temp_ul = 0;
+	unsigned temp;
+	int new_bin;
+	int ret;
+
+	tsens_dev.sensor_num = msm_thermal_info.sensor_id;
+	ret = tsens_get_temp(&tsens_dev, &temp_ul);
+	if (ret) {
+		pr_warn("msm_thermal: Unable to read TSENS sensor %d\n",
+				tsens_dev.sensor_num);
+		return;
+	}
+
+	temp = (unsigned) temp_ul;
+	new_bin = select_throttled_bin(temp);
+
+	pr_debug("msm_thermal: TSENS sensor %d is %u degC old-bin %d new-bin %d\n",
+		tsens_dev.sensor_num, temp, throttled_bin, new_bin);
+	update_all_cpus_max_freq_if_changed(new_bin, temp);
 }
 
 static void check_temp(struct work_struct *work)
 {
-	static int limit_init;
-	struct tsens_device tsens_dev;
-	unsigned long temp = 0;
-	uint32_t max_freq = limited_max_freq;
-	int cpu = 0;
-	int ret = 0;
-	int poll_faster = 0;
-
-	tsens_dev.sensor_num = msm_thermal_info.sensor_id;
-	ret = tsens_get_temp(&tsens_dev, &temp);
-	if (ret) {
-		if (thermal_debug)
-			pr_info("msm_thermal: Unable to read TSENS sensor %d\n",
-				tsens_dev.sensor_num);
-		goto reschedule;
-	}
-
-	if (thermal_debug)
-		pr_info("msm_thermal: current CPU temperature %lu for sensor %d\n",temp, tsens_dev.sensor_num);
-
-	if (!limit_init) {
-		ret = msm_thermal_get_freq_table();
-		if (ret)
-			goto reschedule;
-		else
-			limit_init = 1;
-	}
-	
-	/* max throttle exceeded - go direct to teh low step until it is under control */
-	if (temp >= MAX_THROTTLE_TEMP) {
-		poll_faster = 1;
-		if (thermal_debug && throttle_on == true)
-			pr_info("msm_thermal: throttling - CPU temp is %luC, max freq: %dMHz\n",temp, max_freq);
-		limit_idx = min_freq_index;
-		max_freq = table[limit_idx].frequency;
-		if (throttle_on == false)
-			pr_info("msm_thermal: throttling ON - threshold temp %dC reached, CPU temp is %luC\n", throttle_temp, temp);
-		throttle_on = true;
-		goto setmaxfreq;
-	}
-
-	/* temp is OK */
-	if (temp < throttle_temp - msm_thermal_info.temp_hysteresis_degC) {
-		if (throttle_on == true)
-			pr_info("msm_thermal: throttling OFF, CPU temp is %luC\n", temp);
-		throttle_on = false;
-		if (limit_idx == limit_idx_high)
-			goto reschedule;
-		limit_idx = limit_idx_high;
-		max_freq = table[limit_idx].frequency;
-		goto setmaxfreq;
-	}
-
-	/* throttle exceeded - step down to the low step until it is under control */
-	if (temp >= throttle_temp) {
-		poll_faster = 1;
-		if (thermal_debug && throttle_on == true)
-			pr_info("msm_thermal: throttling - CPU temp is %luC, max freq: %dMHz\n",temp, max_freq);
-		if (limit_idx == min_freq_index)
-			goto reschedule;
-		limit_idx -= msm_thermal_info.freq_step;
-		if (limit_idx < min_freq_index)
-			limit_idx = min_freq_index;
-		max_freq = table[limit_idx].frequency;
-		if (throttle_on == false)
-			pr_info("msm_thermal: throttling ON - threshold temp %dC reached, CPU temp is %luC\n", throttle_temp, temp);
-		throttle_on = true;
-		goto setmaxfreq;
-	}
-
-	/* warning track - allow to go to max but poll faster */
-	if (temp >= throttle_temp - msm_thermal_info.temp_hysteresis_degC) {
-		poll_faster = 1;
-		if (throttle_on == true)
-			pr_info("msm_thermal: throttling OFF, CPU temp is %luC\n", temp);
-		throttle_on = false;
-		if (thermal_debug)
-			pr_info("msm_thermal: cpu temp:%lu is nearing the threshold %d\n",temp, (throttle_temp - msm_thermal_info.temp_hysteresis_degC));
-		if (limit_idx == limit_idx_high)
-			goto reschedule;
-		limit_idx = limit_idx_high;
-		max_freq = table[limit_idx].frequency;
-		goto setmaxfreq;
-	}
-
-setmaxfreq:
-
-	/* Update new freq limits for all cpus */
-	for_each_possible_cpu(cpu) {
-		ret = update_cpu_max_freq(cpu, max_freq);
-		if (ret) {
-			if (thermal_debug)
-				pr_info("msm_thermal: unable to limit cpu%d max freq to %d\n", cpu, max_freq);
-		}
-	}
-
-reschedule:
-	/* Reschedule next poll adjusting polling time (ms) on current situation */
-	if (enabled) {
-		if (temp > COOL_TEMP) {
-			if (poll_faster) {
-				if (thermal_debug)
-					pr_info("msm_thermal: throttle temp is near, polling at %dms\n",msm_thermal_info.poll_ms - HOT_TEMP_OFFSET_MS);
-				schedule_delayed_work(&check_temp_work,
-						msecs_to_jiffies(msm_thermal_info.poll_ms - HOT_TEMP_OFFSET_MS));
-			} else {
-				if (thermal_debug)
-					pr_info("msm_thermal: CPU temp is fine, polling at %dms\n",msm_thermal_info.poll_ms);
-				schedule_delayed_work(&check_temp_work,
-						msecs_to_jiffies(msm_thermal_info.poll_ms));
-			}
-		} else {
-			if (thermal_debug)
-				pr_info("msm_thermal: CPU temp cool, polling at %dms\n",msm_thermal_info.poll_ms + COOL_TEMP_OFFSET_MS);
-			schedule_delayed_work(&check_temp_work,
-					msecs_to_jiffies(msm_thermal_info.poll_ms + COOL_TEMP_OFFSET_MS));
-		}
-	}
+	check_temp_and_throttle_if_needed(work);
+	configure_sensor_trip_points();
 }
-
-static void disable_msm_thermal(void)
-{
-	int cpu = 0;
-
-	/* make sure check_temp is no longer running */
-	cancel_delayed_work(&check_temp_work);
-	flush_scheduled_work();
-
-	if (limited_max_freq == MSM_CPUFREQ_NO_LIMIT)
-		return;
-
-	for_each_possible_cpu(cpu) {
-		update_cpu_max_freq(cpu, MSM_CPUFREQ_NO_LIMIT);
-	}
-}
-
-static int set_enabled(const char *val, const struct kernel_param *kp)
-{
-	int ret = 0;
-
-	ret = param_set_bool(val, kp);
-	if (!enabled)
-		disable_msm_thermal();
-	else
-		pr_info("msm_thermal: no action for enabled = %d\n", enabled);
-
-	pr_info("msm_thermal: enabled = %d\n", enabled);
-
-	return ret;
-}
-
-static int set_debug(const char *val, const struct kernel_param *kp)
-{
-	int ret = 0;
-
-	ret = param_set_bool(val, kp);
-	pr_info("msm_thermal: debug = %d\n", thermal_debug);
-
-	return ret;
-}
-
-static int set_throttle_temp(const char *val, const struct kernel_param *kp)
-{
-	int ret = 0;
-	long num;
-
-	if (!val)
-		return -EINVAL;
-
-	ret = strict_strtol(val, 0, &num);
-	if (ret == -EINVAL || num > MAX_THROTTLE_TEMP || num < COOL_TEMP)
-		return -EINVAL;
-
-	ret = param_set_int(val, kp);
-
-	pr_info("msm_thermal: throttle_temp = %d\n", throttle_temp);
-
-	return ret;
-}
-
-static int set_min_freq_index(const char *val, const struct kernel_param *kp)
-{
-	int ret = 0;
-	long num;
-
-	if (!val)
-		return -EINVAL;
-
-	ret = strict_strtol(val, 0, &num);
-	if (ret == -EINVAL || num > 8 || num < 4)
-		return -EINVAL;
-
-	ret = param_set_int(val, kp);
-
-	pr_info("msm_thermal: min_freq_index = %d\n", min_freq_index);
-
-	return ret;
-}
-
-static struct kernel_param_ops module_ops_enabled = {
-	.set = set_enabled,
-	.get = param_get_bool,
-};
-
-static struct kernel_param_ops module_ops_debug = {
-	.set = set_debug,
-	.get = param_get_bool,
-};
-
-static struct kernel_param_ops module_ops_thermal_temp = {
-	.set = set_throttle_temp,
-	.get = param_get_uint,
-};
-
-static struct kernel_param_ops module_ops_min_freq_index = {
-	.set = set_min_freq_index,
-	.get = param_get_uint,
-};
-
-module_param_cb(enabled, &module_ops_enabled, &enabled, 0775);
-MODULE_PARM_DESC(enabled, "msm_thermal enforce limit on cpu (Y/N)");
-
-module_param_cb(thermal_debug, &module_ops_debug, &thermal_debug, 0775);
-MODULE_PARM_DESC(thermal_debug, "msm_thermal debug to kernel log (Y/N)");
-
-module_param_cb(throttle_temp, &module_ops_thermal_temp, &throttle_temp, 0775);
-MODULE_PARM_DESC(throttle_temp, "msm_thermal throttle temperature (C)");
-
-module_param_cb(min_freq_index, &module_ops_min_freq_index, &min_freq_index, 0775);
-MODULE_PARM_DESC(min_freq_index, "msm_thermal minimum throttle frequency index");
 
 int __devinit msm_thermal_init(struct msm_thermal_data *pdata)
 {
-	int ret = 0;
 
 	BUG_ON(!pdata);
 	BUG_ON(pdata->sensor_id >= TSENS_MAX_SENSORS);
 	memcpy(&msm_thermal_info, pdata, sizeof(struct msm_thermal_data));
 
-	enabled = 1;
-	INIT_DELAYED_WORK(&check_temp_work, check_temp);
-	schedule_delayed_work(&check_temp_work, 0);
+	INIT_DELAYED_WORK(&first_work, check_temp);
+	INIT_WORK(&trip_work, check_temp);
 
-	return ret;
+	schedule_delayed_work(&first_work, msecs_to_jiffies(5*1000)); 
+
+	return 0;
 }
 
 static int __devinit msm_thermal_dev_probe(struct platform_device *pdev)
@@ -363,7 +205,7 @@ static int __devinit msm_thermal_dev_probe(struct platform_device *pdev)
 		goto fail;
 	WARN_ON(data.sensor_id >= TSENS_MAX_SENSORS);
 
-	key = "qcom,poll-ms";
+/*	key = "qcom,poll-ms";
 	ret = of_property_read_u32(node, key, &data.poll_ms);
 	if (ret)
 		goto fail;
@@ -379,7 +221,7 @@ static int __devinit msm_thermal_dev_probe(struct platform_device *pdev)
 		goto fail;
 
 	key = "qcom,freq-step";
-	ret = of_property_read_u32(node, key, &data.freq_step);
+	ret = of_property_read_u32(node, key, &data.freq_step);*/
 
 fail:
 	if (ret)
