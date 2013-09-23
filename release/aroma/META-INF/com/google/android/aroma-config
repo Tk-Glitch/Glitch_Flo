@@ -185,8 +185,8 @@ selectbox(
 
 selectbox(
   "Auto Undervolting","Lowers the voltage for the lowest cpu frequency. Undervolting may cause instability.\n","@personalize","uv.prop",
-  "Stock","",0,
-  "Undervolt (850 min)","",1,
+  "Stock (no undervolt)","",1,
+  "Undervolt (850 min)","",0,
   "Undervolt (825 min)","",0,
   "Undervolt (800 min)","",0,
   "Undervolt (775 min)","",0,
