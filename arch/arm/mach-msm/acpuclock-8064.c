@@ -823,7 +823,7 @@ static int __init acpuclk_8064_probe(struct platform_device *pdev)
 	}
 	if (opt_bin == 1) {
 		acpuclk_8064_params.l2_freq_tbl = l2_freq_tbl_medium;
-		acpuclk_8064_params.l2_freq_tbl_size = sizeof(l2_freq_tbl_high);
+		acpuclk_8064_params.l2_freq_tbl_size = sizeof(l2_freq_tbl_medium);
 	}
 
 	if (opt_bin == 2) {
