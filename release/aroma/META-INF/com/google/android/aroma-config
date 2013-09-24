@@ -178,9 +178,10 @@ endif;
 
 selectbox(
   "Select CPU optimization level","Overclocks L2 cache and bus bandwidth. If you experience instability, choose stock\n","@personalize","opt.prop",
-  "stock","",0,
-  "fast","",1,
-  "faster","",0
+  "stock","(1.13GHz-4.26GBps)",0,
+  "balanced","(1.19GHz-4.26GBps)",1,
+  "faster","(1.22GHz-4.66GBps)",0,
+  "extreme","(1.35GHz-4.66GBps)",0
 );
 
 selectbox(

@@ -14,13 +14,19 @@ endif;
 if
    file_getprop("/tmp/aroma/opt.prop","selected.0") == "2"
      then
-   ui_print("CPU optimization: high");
+   ui_print("CPU optimization: balanced");
 endif;
 
 if
    file_getprop("/tmp/aroma/opt.prop","selected.0") == "3"
      then
-   ui_print("CPU optimization: ultra");
+   ui_print("CPU optimization: faster");
+endif;
+
+if
+   file_getprop("/tmp/aroma/opt.prop","selected.0") == "3"
+     then
+   ui_print("CPU optimization: extreme");
 endif;
 
 

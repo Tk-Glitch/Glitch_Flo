@@ -138,7 +138,7 @@ static struct l2_level l2_freq_tbl[] __initdata = {
 	{ }
 };
 
-static struct l2_level l2_freq_tbl_high[] __initdata = {
+static struct l2_level l2_freq_tbl_medium[] __initdata = {
 	[0]  = { {  384000, PLL_8, 0, 0x00 },  950000, 1050000, 1 },
 	[1]  = { {  432000, HFPLL, 2, 0x20 }, 1050000, 1050000, 2 },
 	[2]  = { {  486000, HFPLL, 2, 0x24 }, 1050000, 1050000, 2 },
@@ -153,6 +153,25 @@ static struct l2_level l2_freq_tbl_high[] __initdata = {
 	[11] = { {  972000, HFPLL, 1, 0x24 }, 1150000, 1150000, 5 },
 	[12] = { { 1026000, HFPLL, 1, 0x26 }, 1150000, 1150000, 5 },
 	[13] = { { 1080000, HFPLL, 1, 0x28 }, 1150000, 1150000, 5 },
+	[14] = { { 1188000, HFPLL, 1, 0x2C }, 1150000, 1150000, 5 },
+	{ }
+};
+
+static struct l2_level l2_freq_tbl_high[] __initdata = {
+	[0]  = { {  384000, PLL_8, 0, 0x00 },  950000, 1050000, 1 },
+	[1]  = { {  432000, HFPLL, 2, 0x20 }, 1050000, 1050000, 2 },
+	[2]  = { {  486000, HFPLL, 2, 0x24 }, 1050000, 1050000, 2 },
+	[3]  = { {  540000, HFPLL, 2, 0x28 }, 1050000, 1050000, 2 },
+	[4]  = { {  594000, HFPLL, 1, 0x16 }, 1050000, 1050000, 2 },
+	[5]  = { {  648000, HFPLL, 1, 0x18 }, 1050000, 1050000, 4 },
+	[6]  = { {  702000, HFPLL, 1, 0x1A }, 1150000, 1150000, 4 },
+	[7]  = { {  756000, HFPLL, 1, 0x1C }, 1150000, 1150000, 4 },
+	[8]  = { {  810000, HFPLL, 1, 0x1E }, 1150000, 1150000, 4 },
+	[9]  = { {  864000, HFPLL, 1, 0x20 }, 1150000, 1150000, 4 },
+	[10] = { {  918000, HFPLL, 1, 0x22 }, 1150000, 1150000, 6 },
+	[11] = { {  972000, HFPLL, 1, 0x24 }, 1150000, 1150000, 6 },
+	[12] = { { 1026000, HFPLL, 1, 0x26 }, 1150000, 1150000, 6 },
+	[13] = { { 1080000, HFPLL, 1, 0x28 }, 1150000, 1150000, 6 },
 	[14] = { { 1215000, HFPLL, 1, 0x2D }, 1175000, 1175000, 6 },
 	{ }
 };
@@ -803,11 +822,16 @@ static int __init acpuclk_8064_probe(struct platform_device *pdev)
 		acpuclk_8064_params.hfpll_data->nom_vdd_l_max = 74;
 	}
 	if (opt_bin == 1) {
-		acpuclk_8064_params.l2_freq_tbl = l2_freq_tbl_high;
+		acpuclk_8064_params.l2_freq_tbl = l2_freq_tbl_medium;
 		acpuclk_8064_params.l2_freq_tbl_size = sizeof(l2_freq_tbl_high);
 	}
 
 	if (opt_bin == 2) {
+		acpuclk_8064_params.l2_freq_tbl = l2_freq_tbl_high;
+		acpuclk_8064_params.l2_freq_tbl_size = sizeof(l2_freq_tbl_high);
+	}
+
+	if (opt_bin == 3) {
 		acpuclk_8064_params.l2_freq_tbl = l2_freq_tbl_ultra;
 		acpuclk_8064_params.l2_freq_tbl_size = sizeof(l2_freq_tbl_ultra);
 	}
