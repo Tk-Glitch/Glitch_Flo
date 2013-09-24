@@ -806,6 +806,8 @@ static int __init get_opt_level(char *l2_opt)
 		opt_bin = 1;
 	} else if (strcmp(l2_opt, "2") == 0) {
 		opt_bin = 2;
+	} else if (strcmp(l2_opt, "3") == 0) {
+		opt_bin = 3;
 	} else {
 		opt_bin = 0;
 	}
