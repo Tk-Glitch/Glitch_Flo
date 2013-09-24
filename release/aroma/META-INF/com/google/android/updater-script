@@ -24,7 +24,7 @@ if
 endif;
 
 if
-   file_getprop("/tmp/aroma/opt.prop","selected.0") == "3"
+   file_getprop("/tmp/aroma/opt.prop","selected.0") == "4"
      then
    ui_print("CPU optimization: extreme");
 endif;
