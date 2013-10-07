@@ -3579,13 +3579,13 @@ static struct clk_freq_tbl clk_tbl_gfx3d_8930ab[] = {
 
 static unsigned long fmax_gfx3d_8064ab[VDD_DIG_NUM] = {
 	[VDD_DIG_LOW]     = 128000000,
-	[VDD_DIG_NOMINAL] = 325000000,
+	[VDD_DIG_NOMINAL] = 320000000,
 	[VDD_DIG_HIGH]    = 450000000
 };
 
 static unsigned long fmax_gfx3d_8064[VDD_DIG_NUM] = {
 	[VDD_DIG_LOW]     = 128000000,
-	[VDD_DIG_NOMINAL] = 325000000,
+	[VDD_DIG_NOMINAL] = 320000000,
 	[VDD_DIG_HIGH]    = 450000000
 };
 
@@ -6348,9 +6348,9 @@ static struct pll_config_regs pll15_regs = {
 };
 
 static struct pll_config pll15_config = {
-	.l = (0x24 | BVAL(31, 7, 0x620)),
+	.l = (0x21 | BVAL(31, 7, 0x620)),
 	.m = 0x1,
-	.n = 0x9,
+	.n = 0x3,
 	.vco_val = BVAL(17, 16, 0x2),
 	.vco_mask = BM(17, 16),
 	.pre_div_val = 0x0,
@@ -6613,7 +6613,7 @@ void __ref SetGPUpll_config(u32 loc, unsigned long freq)
 	/* Program PLL15 to 975MHZ */
 	pll15_config.l = loc | BVAL(31, 7, 0x620);
 	pll15_config.m = 0x1;
-	pll15_config.n = 0x9;
+	pll15_config.n = 0x3;
 	configure_pllOC(&pll15_config, &pll15_regs, 0);
 	//fmax_gfx3d_8064[VDD_DIG_HIGH] = freq;
 	//gfx3d_clk.c.fmax = fmax_gfx3d_8064;
