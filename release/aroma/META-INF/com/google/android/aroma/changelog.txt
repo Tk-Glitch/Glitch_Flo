@@ -5,7 +5,7 @@
 - CPU governors : Faux's intellidemand, interactive, ondemand
 - I/O schedulers: noop, deadline, row, cfq, fiops, sio
 - Boosted L2/bus speed
-- GPU OC up to 654 MHz (available max frequencies : 128/200/320/450/487/504/545/600/627/654 MHz) - Default is 487 MHz
+- GPU OC up to 627 MHz (available max frequencies : 128/200/320/450/487/504/545/600/627 MHz) - Default is 450 MHz
 - Faux Simple GPU governor support
 - Showp1984's msm_mpdecision hotplug driver
 - Sweep2wake/Sweep2sleep/Doubletap2wake support
