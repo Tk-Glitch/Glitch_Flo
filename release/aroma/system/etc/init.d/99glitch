@@ -33,6 +33,15 @@ else
   echo Sweep2wake enabled >> $KERNEL_LOGFILE;
 fi
 
+#Set SHORTSWEEP
+if [ "`grep SHORTSWEEP=1 $ELEX_CONF`" ]; then
+  echo 1 > /sys/android_touch/shortsweep;
+  echo Shortsweep enabled >> $ELEX_LOGFILE;
+else
+  echo 0 > /sys/android_touch/shortsweep;
+  echo Shortsweep disabled >> $ELEX_LOGFILE;
+fi
+
 #Set DOUBLETAP2WAKE
 if [ "`grep DT2WAKE=1 $KERNEL_CONF`" ]; then
   echo 1 > /sys/android_touch/doubletap2wake;

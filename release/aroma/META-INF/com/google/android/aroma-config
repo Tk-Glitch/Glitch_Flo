@@ -212,6 +212,7 @@ checkbox(
   "Other settings","Select the mods you want to install\n","@personalize","mods.prop",
   "Sweep2Wake","Sweep across buttons to sleep/wake device",0,
   "Sweep2Sleep Only","Sweep across buttons to sleep device",1,
+  "Shortsweep","Shorter sweep distance for Sweep2Wake",1,
   "DoubleTap2Wake","Double tap screen to wake device",1,
   "Disable magnetic on/off","",0
 );
