@@ -33,6 +33,25 @@ else
   echo Sweep2wake enabled >> $KERNEL_LOGFILE;
 fi
 
+#Set S2S_ORIENTATION
+if [ "`grep S2S_ORIENTATION=1 $KERNEL_CONF`" ]; then
+  echo 1 > /sys/android_touch/orientation;
+  echo orientation portrait >> $KERNEL_LOGFILE;
+elif [ "`grep S2S_ORIENTATION=2 $KERNEL_CONF`" ]; then
+  echo 2 > /sys/android_touch/orientation;
+  echo orientation landscape >> $KERNEL_LOGFILE;
+else
+  echo 0 > /sys/android_touch/orientation;
+  echo orientation both >> $KERNEL_LOGFILE;
+fi
+
+#Set PWR_TOGGLE
+if [ "`grep PWR_TOGGLE=1 $KERNEL_CONF`" ]; then
+  echo 1 > /sys/android_touch/pwrkey_suspend;
+else
+  echo 0 > /sys/android_touch/pwrkey_suspend;
+fi
+
 #Set SHORTSWEEP
 if [ "`grep SHORTSWEEP=1 $KERNEL_CONF`" ]; then
   echo 1 > /sys/android_touch/shortsweep;

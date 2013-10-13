@@ -130,17 +130,23 @@ endif;
 if
    file_getprop("/tmp/aroma/mods.prop","item.0.3") == "1"
      then
+   ui_print("S2W/DT2W power toggle enabled");
+endif;
+
+if
+   file_getprop("/tmp/aroma/mods.prop","item.0.4") == "1"
+     then
    ui_print("Shortsweep enabled");
 endif;
 
 if
-    file_getprop("/tmp/aroma/mods.prop","item.0.4") == "1"
+    file_getprop("/tmp/aroma/mods.prop","item.0.5") == "1"
 then
     ui_print("DoubleTap2Wake enabled");
 endif;
 
 if
-   file_getprop("/tmp/aroma/mods.prop","item.0.5") == "1"
+   file_getprop("/tmp/aroma/mods.prop","item.0.6") == "1"
      then
    ui_print("Magnetic on/off disabled");
 endif;

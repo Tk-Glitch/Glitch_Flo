@@ -16,8 +16,30 @@ else
   echo "SWEEP2WAKE=0" >> $CONFIGFILE;
 fi
 
+#PWR_TOGGLE
+PWR_TOGGLE=`grep "item.0.3" /tmp/aroma/mods.prop | cut -d '=' -f2`
+echo -e "\n\n##### S2W/DT2W power button toggle Settings #####\n# 0 to disable S2W/DT2W power button toggle" >> $CONFIGFILE
+echo -e "# 1 to enable S2W/DT2W power button toggle\n" >> $CONFIGFILE
+if [ $PWR_TOGGLE = 1 ]; then
+  echo "PWR_TOGGLE=1" >> $CONFIGFILE;
+else
+  echo "PWR_TOGGLE=0" >> $CONFIGFILE;
+fi
+
+#S2S_ORIENTATION
+S2S_ORIENTATION=`cat /tmp/aroma/orientation.prop | cut -d '=' -f2`
+echo -e "\n\n##### S2S orientation Settings #####\n# 0 for both" >> $CONFIGFILE
+echo -e "# 1 for portrait only\n# 2 for landscape only\n" >> $CONFIGFILE
+if [ $S2S_ORIENTATION = 2 ]; then
+  echo "S2S_ORIENTATION=1" >> $CONFIGFILE;
+elif [ $S2S_ORIENTATION = 3 ]; then
+  echo "S2S_ORIENTATION=2" >> $CONFIGFILE;
+else
+  echo "S2S_ORIENTATION=0" >> $CONFIGFILE;
+fi
+
 #Shortsweep
-SHORTSWEEP=`grep "item.0.3" /tmp/aroma/mods.prop | cut -d '=' -f2`
+SHORTSWEEP=`grep "item.0.4" /tmp/aroma/mods.prop | cut -d '=' -f2`
 echo -e "\n\n##### Shortsweep Settings #####\n# 0 to disable Shortsweep" >> $CONFIGFILE
 echo -e "# 1 to enable Shortsweep\n" >> $CONFIGFILE
 if [ $SHORTSWEEP = 1 ]; then
@@ -26,9 +48,8 @@ else
   echo "SHORTSWEEP=0" >> $CONFIGFILE;
 fi
 
-
 #DT2W
-DT2W=`grep "item.0.4" /tmp/aroma/mods.prop | cut -d '=' -f2`
+DT2W=`grep "item.0.5" /tmp/aroma/mods.prop | cut -d '=' -f2`
 echo -e "\n\n##### DoubleTap2Wake Settings #####\n# 0 to disable DoubleTap2Wake" >> $CONFIGFILE
 echo -e "# 1 to enable DoubleTap2Wake\n" >> $CONFIGFILE
 if [ $DT2W = 1 ]; then
@@ -38,7 +59,7 @@ else
 fi
 
 #Magnetic on/off
-LID=`grep "item.0.5" /tmp/aroma/mods.prop | cut -d '=' -f2`
+LID=`grep "item.0.6" /tmp/aroma/mods.prop | cut -d '=' -f2`
 echo -e "\n\n##### Magnetic on/off Settings #####\n# 0 to disable Magnetic on/off" >> $CONFIGFILE
 echo -e "# 1 to enable Magnetic on/off\n" >> $CONFIGFILE
 if [ $LID = 1 ]; then
