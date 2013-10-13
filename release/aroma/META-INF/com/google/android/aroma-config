@@ -208,6 +208,14 @@ selectbox(
   "Simple","",0
 );
 
+selectbox(
+  "Select Battery life eXtender settings","Sets the charge voltage of the battery to extend its lifetime\n","@personalize","ble.prop",
+  "4.3V","(stock)",1,
+  "4.2V","",0,
+  "4.1V","",0,
+  "4.0V","",0
+);
+
 checkbox(
   "Other settings","Select the mods you want to install\n","@personalize","mods.prop",
   "Sweep2Wake","Sweep across buttons to sleep/wake device",0,

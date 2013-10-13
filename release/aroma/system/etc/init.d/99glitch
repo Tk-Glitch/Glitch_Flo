@@ -34,12 +34,12 @@ else
 fi
 
 #Set SHORTSWEEP
-if [ "`grep SHORTSWEEP=1 $ELEX_CONF`" ]; then
+if [ "`grep SHORTSWEEP=1 $KERNEL_CONF`" ]; then
   echo 1 > /sys/android_touch/shortsweep;
-  echo Shortsweep enabled >> $ELEX_LOGFILE;
+  echo Shortsweep enabled >> $KERNEL_LOGFILE;
 else
   echo 0 > /sys/android_touch/shortsweep;
-  echo Shortsweep disabled >> $ELEX_LOGFILE;
+  echo Shortsweep disabled >> $KERNEL_LOGFILE;
 fi
 
 #Set DOUBLETAP2WAKE
@@ -65,12 +65,12 @@ fstrim -v /cache | tee -a $KERNEL_LOGFILE;
 fstrim -v /data | tee -a $KERNEL_LOGFILE;
 
 #thermal settings
-if [ "`grep THERM=1 $ELEX_CONF`" ]; then
+if [ "`grep THERM=1 $KERNEL_CONF`" ]; then
   echo 80,82,90,100 > /sys/module/msm_thermal/parameters/limit_temp_degC;
-  echo run cool >> $ELEX_LOGFILE;
-elif [ "`grep THERM=2 $ELEX_CONF`" ]; then
+  echo run cool >> $KERNEL_LOGFILE;
+elif [ "`grep THERM=2 $KERNEL_CONF`" ]; then
   echo 85,90,97,105 > /sys/module/msm_thermal/parameters/limit_temp_degC;
-  echo run hot >> $ELEX_LOGFILE;
+  echo run hot >> $KERNEL_LOGFILE;
 fi
 
 #GPU Governor settings
@@ -83,6 +83,17 @@ elif [ "`grep GPU_GOV=3 $KERNEL_CONF`" ]; then
 else
   echo ondemand > /sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/pwrscale/trustzone/governor;
   echo Ondemand GPU Governor >> $KERNEL_LOGFILE;
+fi
+
+#Battery life extender
+if [ "`grep BLE=2 $KERNEL_CONF`" ]; then
+  echo 4200 > /sys/devices/i2c-0/0-006a/float_voltage
+elif [ "`grep BLE=3 $KERNEL_CONF`" ]; then
+  echo 4100 > /sys/devices/i2c-0/0-006a/float_voltage
+elif [ "`grep BLE=4 $KERNEL_CONF`" ]; then
+  echo 4000 > /sys/devices/i2c-0/0-006a/float_voltage
+else
+  echo 4300 > /sys/devices/i2c-0/0-006a/float_voltage
 fi
 
 #exFAT support

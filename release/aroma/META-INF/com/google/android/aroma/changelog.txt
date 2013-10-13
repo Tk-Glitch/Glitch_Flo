@@ -8,13 +8,14 @@
 - GPU OC up to 627 MHz (available max frequencies : 128/200/320/450/487/504/545/600/627 MHz) - Default is 450 MHz
 - Faux Simple GPU governor support
 - Showp1984's msm_mpdecision hotplug driver
+- tni.andro's battery life extender support
 - Sweep2wake/Sweep2sleep/Doubletap2wake support
 - Magnetic on/off 
 - Supercurio's Color calibrator support
 - Fsync on/off support
 - FauxSound support
 - USB fast charging support
-- Default read-ahead buffer set to 1024
+- Default read-ahead buffer set to 2048
 - Msm thermal enhancements
 - Optimized algorithms
 - NTFS and exFAT support

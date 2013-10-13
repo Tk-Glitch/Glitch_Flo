@@ -16,8 +16,19 @@ else
   echo "SWEEP2WAKE=0" >> $CONFIGFILE;
 fi
 
+#Shortsweep
+SHORTSWEEP=`grep "item.0.3" /tmp/aroma/mods.prop | cut -d '=' -f2`
+echo -e "\n\n##### Shortsweep Settings #####\n# 0 to disable Shortsweep" >> $CONFIGFILE
+echo -e "# 1 to enable Shortsweep\n" >> $CONFIGFILE
+if [ $SHORTSWEEP = 1 ]; then
+  echo "SHORTSWEEP=1" >> $CONFIGFILE;
+else
+  echo "SHORTSWEEP=0" >> $CONFIGFILE;
+fi
+
+
 #DT2W
-DT2W=`grep "item.0.3" /tmp/aroma/mods.prop | cut -d '=' -f2`
+DT2W=`grep "item.0.4" /tmp/aroma/mods.prop | cut -d '=' -f2`
 echo -e "\n\n##### DoubleTap2Wake Settings #####\n# 0 to disable DoubleTap2Wake" >> $CONFIGFILE
 echo -e "# 1 to enable DoubleTap2Wake\n" >> $CONFIGFILE
 if [ $DT2W = 1 ]; then
@@ -27,7 +38,7 @@ else
 fi
 
 #Magnetic on/off
-LID=`grep "item.0.4" /tmp/aroma/mods.prop | cut -d '=' -f2`
+LID=`grep "item.0.5" /tmp/aroma/mods.prop | cut -d '=' -f2`
 echo -e "\n\n##### Magnetic on/off Settings #####\n# 0 to disable Magnetic on/off" >> $CONFIGFILE
 echo -e "# 1 to enable Magnetic on/off\n" >> $CONFIGFILE
 if [ $LID = 1 ]; then
@@ -56,6 +67,20 @@ if [ $GPU_GOV = 2 ]; then
   echo "GPU_GOV=2" >> $CONFIGFILE;
 else
   echo "GPU_GOV=1" >> $CONFIGFILE;
+fi
+
+#Battery life extender
+BLE=`cat /tmp/aroma/ble.prop | cut -d '=' -f2`
+echo -e "\n\n##### Battery life eXtender #####\n# 1 4.3V (stock)" >> $CONFIGFILE
+echo -e "\n# 2 4.2V\n# 3 4.1V\n# 4 4.0V\n" >> $CONFIGFILE
+if [ $BLE = 2 ]; then
+  echo "BLE=2" >> $CONFIGFILE;
+elif [ $BLE = 3 ]; then
+  echo "BLE=3" >> $CONFIGFILE;
+elif [ $BLE = 4 ]; then
+  echo "BLE=4" >> $CONFIGFILE;
+else
+  echo "BLE=1" >> $CONFIGFILE;
 fi
 
 echo -e "\n\n##############################" >> $CONFIGFILE
