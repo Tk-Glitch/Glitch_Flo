@@ -20,13 +20,19 @@ endif;
 if
    file_getprop("/tmp/aroma/opt.prop","selected.0") == "3"
      then
-   ui_print("CPU optimization: faster");
+   ui_print("CPU optimization: fast");
 endif;
 
 if
    file_getprop("/tmp/aroma/opt.prop","selected.0") == "4"
      then
    ui_print("CPU optimization: extreme");
+endif;
+
+if
+   file_getprop("/tmp/aroma/opt.prop","selected.0") == "5"
+     then
+   ui_print("CPU optimization: godly");
 endif;
 
 
