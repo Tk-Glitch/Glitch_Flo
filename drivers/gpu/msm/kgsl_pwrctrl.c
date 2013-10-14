@@ -34,13 +34,7 @@
 #define UPDATE_BUSY_VAL		1000000
 #define UPDATE_BUSY		50
 
-struct kgsl_device *Gbldevice;
-unsigned long orig_max;
 unsigned long internal_max = 450000000;
-
-#ifdef CONFIG_MSM_KGSL_KERNEL_API_ENABLE
-struct device *stored_dev;
-#endif
 
 struct clk_pair {
 	const char *name;
@@ -405,10 +399,6 @@ static int kgsl_pwrctrl_max_gpuclk_store(struct device *dev,
 	{
 		SetGPUpll_config(0x21, val);
 	}
-	else if (val == 487500000)
-	{
-		SetGPUpll_config(0x24, val);
-	}
 	else if (val == 504000000)
 	{
 		SetGPUpll_config(0x25, val);
@@ -459,7 +449,7 @@ static int kgsl_pwrctrl_max_gpuclk_show(struct device *dev,
 		return 0;
 	pwr = &device->pwrctrl;
 	return snprintf(buf, PAGE_SIZE, "%ld\n",
-				internal_max);
+			internal_max);
 }
 
 static int kgsl_pwrctrl_gpuclk_store(struct device *dev,
@@ -658,7 +648,6 @@ static int kgsl_pwrctrl_gpu_available_frequencies_show(
 			num_chars += snprintf(buf + num_chars, PAGE_SIZE, "%d ",600000000);
 			num_chars += snprintf(buf + num_chars, PAGE_SIZE, "%d ",545000000);
 			num_chars += snprintf(buf + num_chars, PAGE_SIZE, "%d ",504000000);
-			num_chars += snprintf(buf + num_chars, PAGE_SIZE, "%d ",487500000);
 			num_chars += snprintf(buf + num_chars, PAGE_SIZE, "%d ",450000000);
 		}
 		else

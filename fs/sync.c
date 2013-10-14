@@ -7,7 +7,6 @@
 #include <linux/fs.h>
 #include <linux/slab.h>
 #include <linux/export.h>
-#include <linux/module.h>
 #include <linux/namei.h>
 #include <linux/sched.h>
 #include <linux/writeback.h>
@@ -256,11 +255,12 @@ static int do_fsync(unsigned int fd, int datasync)
 {
 	struct file *file;
 	int ret = -EBADF;
-	
-	file = fget(fd);
+	int fput_needed;
+
+	file = fget_light(fd, &fput_needed);
 	if (file) {
 		ret = vfs_fsync(file, datasync);
-		fput(file);
+		fput_light(file, fput_needed);
 	}
 	return ret;
 }
@@ -461,7 +461,6 @@ SYSCALL_DEFINE(sync_file_range2)(int fd, unsigned int flags,
 		return 0;
 	else
 #endif
-
 	return sys_sync_file_range(fd, offset, nbytes, flags);
 }
 #ifdef CONFIG_HAVE_SYSCALL_WRAPPERS

@@ -39,7 +39,7 @@
 /*
  * Sleep at most 200ms at a time in balance_dirty_pages().
  */
-#define MAX_PAUSE		200
+#define MAX_PAUSE		max(HZ/5, 1)
 
 /*
  * Try to keep balance_dirty_pages() call intervals higher than this many pages
@@ -50,7 +50,7 @@
 /*
  * Estimate write bandwidth at 200ms intervals.
  */
-#define BANDWIDTH_INTERVAL	200
+#define BANDWIDTH_INTERVAL	max(HZ/5, 1)
 
 #define RATELIMIT_CALC_SHIFT	10
 
@@ -1573,18 +1573,10 @@ void writeback_set_ratelimit(void)
 }
 
 static int
-ratelimit_handler(struct notifier_block *self, unsigned long action,
-	void *hcpu)
+ratelimit_handler(struct notifier_block *self, unsigned long u, void *v)
 {
-
-	switch (action & ~CPU_TASKS_FROZEN) {
-	case CPU_ONLINE:
-	case CPU_DEAD:
-		writeback_set_ratelimit();
-		return NOTIFY_OK;
-	default:
-		return NOTIFY_DONE;
-	}
+	writeback_set_ratelimit();
+	return NOTIFY_DONE;
 }
 
 static struct notifier_block ratelimit_nb = {
