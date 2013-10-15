@@ -3,23 +3,13 @@
 # Glitch kernel build-script
 #
 # clean : clean the build directory.
+# cleank : clean the built kernel packages
+# aosp : build an aosp compatible kernel
 
 # CM repo path :
 repo=~/android/system
 
-# Choose Android version :
-#init="4.1"
-#init="4.2"
-init="4.3"
-
-# Type of build (aroma or zImage)
-export build_type="aroma"
-#export build_type="zImage"
-
-export CM_REPO=$repo
-
 # Toolchain :
-# export ARCHFLAGS="arm"
 export ARCH="arm"
 #export CROSS_PREFIX="$repo/prebuilts/gcc/linux-x86/arm/arm-eabi-4.6/bin/arm-eabi-"
 export CROSS_PREFIX="$repo/prebuilts/gcc/linux-x86/arm/sabermod-androideabi-4.8/bin/arm-linux-androideabi-"
@@ -27,11 +17,11 @@ export CROSS_PREFIX="$repo/prebuilts/gcc/linux-x86/arm/sabermod-androideabi-4.8/
 setup ()
 {
 
-    if [ x = "x$CM_REPO" ] ; then
+    if [ x = "x$repo" ] ; then
         echo "Android build environment must be configured"
         exit 1
     fi
-    . "$CM_REPO"/build/envsetup.sh
+    . "$repo"/build/envsetup.sh
 
 #   Arch-dependent definitions
     case `uname -s` in
@@ -51,7 +41,7 @@ setup ()
         CCACHE=ccache
         CCACHE_BASEDIR="$KERNEL_DIR"
         CCACHE_COMPRESS=1
-        CCACHE_DIR="$CM_REPO/kernel/Asus/.ccache"
+        CCACHE_DIR="$repo/kernel/Asus/.ccache"
         export CCACHE_DIR CCACHE_COMPRESS CCACHE_BASEDIR
     else
         CCACHE=""
@@ -63,7 +53,7 @@ build ()
 {
 
     local target=flo
-    echo "Building for flo - Android $init.x"
+    echo "Building for flo"
     local target_dir="$BUILD_DIR/flo"
     local module
     rm -fr "$target_dir"
@@ -78,63 +68,35 @@ build ()
 }
 
 echo "copying modules and zImage"
-
-
-if [ "$build_type" = "aroma" ] ; then
 mkdir -p $KERNEL_DIR/release/aroma/system/lib/modules/
-else
-mkdir -p $KERNEL_DIR/release/zimage/system/lib/modules/
-fi
-
 cd $target_dir
-
-if [ "$build_type" = "aroma" ] ; then
 find -name '*.ko' -exec cp -av {} $KERNEL_DIR/release/aroma/system/lib/modules/ \;
 "$CROSS_PREFIX"strip --strip-unneeded $KERNEL_DIR/release/aroma/system/lib/modules/*
-else
-find -name '*.ko' -exec cp -av {} $KERNEL_DIR/release/zimage/system/lib/modules/ \;
-"$CROSS_PREFIX"strip --strip-unneeded $KERNEL_DIR/release/zimage/system/lib/modules/*
-fi
-
 cd $KERNEL_DIR
-
-if [ "$build_type" = "aroma" ] ; then
 mv $target_dir/arch/arm/boot/zImage $KERNEL_DIR/release/aroma/boot/glitch.zImage
-else
-mv $target_dir/arch/arm/boot/zImage $KERNEL_DIR/release/zimage/kernel/zImage
-fi
 
 echo "packaging it up"
-
-if [ "$build_type" = "aroma" ] ; then
 cd release/aroma
-else
-cd release/zimage
-fi
 
-mkdir -p $KERNEL_DIR/release/Flashable-flo-CMfriendly
-
+if [ "$aosp" = "y" ] ; then
+mkdir -p $KERNEL_DIR/release/Flashable-flo-AOSPfriendly
 REL=Glitch-flo-$(date +%Y%m%d-r%H).zip
-	
-	if [ "$build_type" = "aroma" ] ; then
-	zip -q -r ${REL} boot config META-INF system
-	else
-	zip -q -r ${REL} kernel META-INF system
-	fi
 
+	zip -q -r ${REL} boot config META-INF system
+	#sha256sum ${REL} > ${REL}.sha256sum
+	mv ${REL}* $KERNEL_DIR/release/Flashable-flo-AOSPfriendly/
+else
+mkdir -p $KERNEL_DIR/release/Flashable-flo-CMfriendly
+REL=Glitch-flo-$(date +%Y%m%d-r%H)-CM.zip
+
+	zip -q -r ${REL} boot config META-INF system
 	#sha256sum ${REL} > ${REL}.sha256sum
 	mv ${REL}* $KERNEL_DIR/release/Flashable-flo-CMfriendly/
-
-if [ "$build_type" = "aroma" ] ; then
-rm boot/glitch.zImage
-else
-rm kernel/zImage
 fi
 
+rm boot/glitch.zImage
 rm -r system/lib/modules/*
-
 cd $KERNEL_DIR
-
 echo ""
 echo ${REL}
 }
@@ -152,9 +114,32 @@ if [ "$1" = clean ] ; then
 
 else
 
-if [ "$1" = kclean ] ; then
+if [ "$1" = cleank ] ; then
     rm -fr "$KERNEL_DIR"/release/Flashable-flo-CMfriendly/*
+    rm -fr "$KERNEL_DIR"/release/Flashable-flo-AOSPfriendly/*
     echo "Built kernels cleaned"
+
+else
+
+if [ "$1" = aosp ] ; then
+
+aosp="y"
+
+	git apply --reverse ../CMpatch1
+	git apply --reverse ../CMpatch2
+    echo "--------------------------------------------------------"
+    echo "------------Patched tree for AOSP compat----------------"
+    echo "--------------------------------------------------------"
+
+time {
+		build flo
+}
+
+	git apply ../CMpatch2
+	git apply ../CMpatch1
+    echo "--------------------------------------------------------"
+    echo "-----------Patched tree back to CM compat---------------"
+    echo "--------------------------------------------------------"
 
 else
 
@@ -163,5 +148,6 @@ time {
     build flo
 
 }
+fi
 fi
 fi
