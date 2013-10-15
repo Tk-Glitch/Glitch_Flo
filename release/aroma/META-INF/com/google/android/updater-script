@@ -157,6 +157,13 @@ if
    ui_print("Magnetic on/off disabled");
 endif;
 
+if
+   file_getprop("/tmp/aroma/mods.prop","item.0.7") == "1"
+     then
+   ui_print("OTG+Charge mode enabled");
+endif;
+
+
 set_progress(0.3);
 
 

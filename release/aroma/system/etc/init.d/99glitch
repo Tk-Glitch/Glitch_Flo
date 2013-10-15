@@ -79,6 +79,12 @@ else
   echo Magnetic on/off enabled >> $KERNEL_LOGFILE;
 fi
 
+#USB Host mode charging
+if [ "`grep OTGCM=1 $KERNEL_CONF`" ]; then
+  echo Y > /sys/module/msm_otg/parameters/usbhost_charge_mode;
+  echo USB OTG+Charge mode enabled >> $KERNEL_LOGFILE;
+fi
+
 #fstrim
 fstrim -v /cache | tee -a $KERNEL_LOGFILE;
 fstrim -v /data | tee -a $KERNEL_LOGFILE;

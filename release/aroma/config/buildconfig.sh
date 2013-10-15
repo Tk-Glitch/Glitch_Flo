@@ -68,6 +68,16 @@ else
   echo "LID=1" >> $CONFIGFILE;
 fi
 
+#USB Host mode charging
+OTGCM=`grep "item.0.7" /tmp/aroma/mods.prop | cut -d '=' -f2`
+echo -e "\n\n##### USB OTG+Charge Settings ######\n# 1 to enable USB host mode charging\n# 0 to disable USB host mode charging\n" >> $CONFIGFILE
+if [ $OTGCM = 1 ]; then
+  echo "OTGCM=1" >> $CONFIGFILE;
+else
+  echo "OTGCM=0" >> $CONFIGFILE;
+fi
+
+
 #THERMAL
 THERM=`cat /tmp/aroma/thermal.prop | cut -d '=' -f2`
 echo -e "\n\n##### Thermal Settings #####\n# 0 for default thermal throttling" >> $CONFIGFILE
