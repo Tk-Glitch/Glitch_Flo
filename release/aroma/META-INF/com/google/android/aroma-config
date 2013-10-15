@@ -98,7 +98,7 @@ selectbox(
   "2160MHz","",0,
   "2214MHz","(extreme)",0,
   "2268MHz","",0,
-  "2322MHz","(godly)",0
+  "2322MHz","(glitchy)",0
 );
 
 endif;
@@ -120,7 +120,7 @@ selectbox(
   "2160MHz","",0,
   "2214MHz","(extreme)",0,
   "2268MHz","",0,
-  "2322MHz","(godly)",0
+  "2322MHz","(glitchy)",0
 );
 
 selectbox(
@@ -137,7 +137,7 @@ selectbox(
   "2160MHz","",0,
   "2214MHz","(extreme)",0,
   "2268MHz","",0,
-  "2322MHz","(godly)",0
+  "2322MHz","(glitchy)",0
 );
 
 selectbox(
@@ -154,7 +154,7 @@ selectbox(
   "2160MHz","",0,
   "2214MHz","(extreme)",0,
   "2268MHz","",0,
-  "2322MHz","(godly)",0
+  "2322MHz","(glitchy)",0
 );
 
 selectbox(
@@ -171,7 +171,7 @@ selectbox(
   "2160MHz","",0,
   "2214MHz","(extreme)",0,
   "2268MHz","",0,
-  "2322MHz","(godly)",0
+  "2322MHz","(glitchy)",0
 );
 
 endif;
@@ -182,7 +182,7 @@ selectbox(
   "balanced","(1.19GHz-4.26GBps)",1,
   "fast","(1.22GHz-4.66GBps)",0,
   "extreme","(1.35GHz-4.66GBps)",0,
-  "godly","(1.43GHz-4.80GBps)",0
+  "glitchy","(1.43GHz-4.80GBps)",0
 );
 
 selectbox(
@@ -210,11 +210,11 @@ selectbox(
 );
 
 selectbox(
-  "Select Battery life eXtender settings","Sets the charge voltage of the battery to extend its lifetime\n","@personalize","ble.prop",
-  "4.3V","(stock)",1,
-  "4.2V","",0,
-  "4.1V","",0,
-  "4.0V","",0
+  "Select Battery life eXtender settings","Sets the charge voltage of the battery to extend its lifespan\n","@personalize","ble.prop",
+  "4.3V","(100% - stock)",0,
+  "4.2V","(93% - balanced)",1,
+  "4.1V","(83% - conservative)",0,
+  "4.0V","(73% - very conservative)",0
 );
 
 checkbox(

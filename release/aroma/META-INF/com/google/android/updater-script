@@ -32,7 +32,7 @@ endif;
 if
    file_getprop("/tmp/aroma/opt.prop","selected.0") == "5"
      then
-   ui_print("CPU optimization: godly");
+   ui_print("CPU optimization: glitchy");
 endif;
 
 

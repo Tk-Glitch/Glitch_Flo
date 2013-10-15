@@ -77,7 +77,6 @@ else
   echo "OTGCM=0" >> $CONFIGFILE;
 fi
 
-
 #THERMAL
 THERM=`cat /tmp/aroma/thermal.prop | cut -d '=' -f2`
 echo -e "\n\n##### Thermal Settings #####\n# 0 for default thermal throttling" >> $CONFIGFILE
@@ -102,8 +101,8 @@ fi
 
 #Battery life extender
 BLE=`cat /tmp/aroma/ble.prop | cut -d '=' -f2`
-echo -e "\n\n##### Battery life eXtender #####\n# 1 4.3V (stock)" >> $CONFIGFILE
-echo -e "\n# 2 4.2V\n# 3 4.1V\n# 4 4.0V\n" >> $CONFIGFILE
+echo -e "\n\n##### Battery life eXtender #####\n# 1 4.3V (stock - 100%)" >> $CONFIGFILE
+echo -e "\n# 2 4.2V (balanced - 93%)\n# 3 4.1V (conservative - 83%)\n# 4 4.0V (very conservative - 73%)\n" >> $CONFIGFILE
 if [ $BLE = 2 ]; then
   echo "BLE=2" >> $CONFIGFILE;
 elif [ $BLE = 3 ]; then
