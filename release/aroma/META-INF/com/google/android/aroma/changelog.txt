@@ -1,24 +1,30 @@
 <b>Glitch kernel for flo</b>
 
-- Based on CyanogenMod 3.4.0 kernel source for MSM devices
-- CPU OC up to 2.3Ghz and undervolt support (using for example TricksterMod or FauxClock) - Default is 1512MHz
+- Based on CyanogenMod 3.4.0 kernel source for MSM devices updated to linux 3.4.1
+- CPU OC up to 2.3Ghz with OV/UV support
+- L2/bus speed OC up to 1.43GHz / 4.8GBPS
+- GPU OC up to 627 MHz
+	- Faux Simple GPU governor support
+
 - CPU governors : Faux's intellidemand, interactive, ondemand
 - I/O schedulers: noop, deadline, row, cfq, fiops, sio
-- Boosted L2/bus speed
-- GPU OC up to 627 MHz (available max frequencies : 128/200/320/450/487/504/545/600/627 MHz) - Default is 450 MHz
-- Faux Simple GPU governor support
-- Showp1984's msm_mpdecision hotplug driver
+
+- Kernel based thermal control by crpalmer and flar2
+- Kernel based msm_mpdecision hotplug driver by Showp1984's
+	- Faux123 Intelli-plug hotplug driver support
+
 - tni.andro's battery life extender support
-- Sweep2wake/Sweep2sleep/Doubletap2wake support
-- Magnetic on/off 
-- Supercurio's Color calibrator support
-- Fsync on/off support
+- Sweep2wake/Sweep2sleep/Doubletap2wake support by flar2
+- Magnetic on/off
+
 - FauxSound support
 - USB fast charging support
-- Default read-ahead buffer set to 2048
-- Msm thermal enhancements
-- Optimized algorithms
+- USB OTG charge hack support by flar2
+
+- Optimized algorithms and libraries
+- Various performance and power saving tweaks
 - NTFS and exFAT support
-- Aroma installer to set core features at flash time
-- Compiled with latest SaberMod 4.8.x toolchain
+- Kexec-hardboot support
+
+- Compiled with latest SaberMod 4.8.x toolchain / -O3 (optimize a lot)
 
