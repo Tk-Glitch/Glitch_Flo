@@ -78,20 +78,29 @@ mv $target_dir/arch/arm/boot/zImage $KERNEL_DIR/release/aroma/boot/glitch.zImage
 echo "packaging it up"
 cd release/aroma
 
+. $KERNEL_DIR/release/rev
+
 if [ "$aosp" = "y" ] ; then
+
 mkdir -p $KERNEL_DIR/release/Flashable-flo-AOSPfriendly
-REL=Glitch-flo-$(date +%Y%m%d-r%H).zip
+REL=Glitch-flo-r$counter.zip
 
 	zip -q -r ${REL} boot config META-INF system
 	#sha256sum ${REL} > ${REL}.sha256sum
 	mv ${REL}* $KERNEL_DIR/release/Flashable-flo-AOSPfriendly/
 else
+
+counter=$((counter + 1))
+
 mkdir -p $KERNEL_DIR/release/Flashable-flo-CMfriendly
-REL=Glitch-flo-$(date +%Y%m%d-r%H)-CM.zip
+REL=Glitch-flo-r$counter-CM.zip
 
 	zip -q -r ${REL} boot config META-INF system
 	#sha256sum ${REL} > ${REL}.sha256sum
 	mv ${REL}* $KERNEL_DIR/release/Flashable-flo-CMfriendly/
+
+echo counter=$counter > $KERNEL_DIR/release/rev;
+
 fi
 
 rm boot/glitch.zImage
