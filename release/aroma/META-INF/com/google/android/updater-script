@@ -26,11 +26,17 @@ endif;
 if
    file_getprop("/tmp/aroma/opt.prop","selected.0") == "4"
      then
-   ui_print("CPU optimization: extreme");
+   ui_print("CPU optimization: faster");
 endif;
 
 if
    file_getprop("/tmp/aroma/opt.prop","selected.0") == "5"
+     then
+   ui_print("CPU optimization: extreme");
+endif;
+
+if
+   file_getprop("/tmp/aroma/opt.prop","selected.0") == "6"
      then
    ui_print("CPU optimization: glitchy");
 endif;

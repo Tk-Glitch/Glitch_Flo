@@ -203,6 +203,9 @@ case $val4 in
 	5)
 	  l2_opt="l2_opt=4"
 	  ;;
+	6)
+	  l2_opt="l2_opt=5"
+	  ;;
 esac
 
 #set undervolting
