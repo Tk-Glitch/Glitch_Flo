@@ -184,7 +184,7 @@ selectbox(
   "fast","(1.35GHz-4.66GBps)",0,
   "faster","(1.43GHz-4.80GBps)",0,
   "extreme","(1.51GHz-4.80GBps)",0,
-  "glitchy","(1.62GHz-5.00GBps)",0
+  "glitchy","(1.57GHz-4.80GBps)",0
 );
 
 selectbox(
