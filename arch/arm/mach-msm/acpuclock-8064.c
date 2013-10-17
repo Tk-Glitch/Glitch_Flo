@@ -21,6 +21,7 @@
 #include "mach/socinfo.h"
 #include "acpuclock.h"
 #include "acpuclock-krait.h"
+#include "vdd_limits_8064.h"
 
 int opt_bin = 1;
 
@@ -39,7 +40,7 @@ static struct hfpll_data hfpll_data __initdata = {
 	.vdd[HFPLL_VDD_NONE] =       0,
 	.vdd[HFPLL_VDD_LOW]  =  945000,
 	.vdd[HFPLL_VDD_NOM]  = 1050000,
-	.vdd[HFPLL_VDD_HIGH] = 1250000,
+	.vdd[HFPLL_VDD_HIGH] = MEM_DIG_MAX_VDD,
 };
 
 static struct scalable scalable[] __initdata = {
@@ -49,9 +50,9 @@ static struct scalable scalable[] __initdata = {
 		.aux_clk_sel = 3,
 		.sec_clk_sel = 2,
 		.l2cpmr_iaddr = 0x4501,
-		.vreg[VREG_CORE] = { "krait0", 1400000 },
-		.vreg[VREG_MEM]  = { "krait0_mem", 1250000 },
-		.vreg[VREG_DIG]  = { "krait0_dig", 1250000 },
+		.vreg[VREG_CORE] = { "krait0", SC_MAX_VDD },
+		.vreg[VREG_MEM]  = { "krait0_mem", MEM_DIG_MAX_VDD },
+		.vreg[VREG_DIG]  = { "krait0_dig", MEM_DIG_MAX_VDD },
 		.vreg[VREG_HFPLL_A] = { "krait0_hfpll", 1800000 },
 	},
 	[CPU1] = {
@@ -60,9 +61,9 @@ static struct scalable scalable[] __initdata = {
 		.aux_clk_sel = 3,
 		.sec_clk_sel = 2,
 		.l2cpmr_iaddr = 0x5501,
-		.vreg[VREG_CORE] = { "krait1", 1400000 },
-		.vreg[VREG_MEM]  = { "krait1_mem", 1250000 },
-		.vreg[VREG_DIG]  = { "krait1_dig", 1250000 },
+		.vreg[VREG_CORE] = { "krait1", SC_MAX_VDD },
+		.vreg[VREG_MEM]  = { "krait1_mem", MEM_DIG_MAX_VDD },
+		.vreg[VREG_DIG]  = { "krait1_dig", MEM_DIG_MAX_VDD },
 		.vreg[VREG_HFPLL_A] = { "krait1_hfpll", 1800000 },
 	},
 	[CPU2] = {
@@ -71,9 +72,9 @@ static struct scalable scalable[] __initdata = {
 		.aux_clk_sel = 3,
 		.sec_clk_sel = 2,
 		.l2cpmr_iaddr = 0x6501,
-		.vreg[VREG_CORE] = { "krait2", 1400000 },
-		.vreg[VREG_MEM]  = { "krait2_mem", 1250000 },
-		.vreg[VREG_DIG]  = { "krait2_dig", 1250000 },
+		.vreg[VREG_CORE] = { "krait2", SC_MAX_VDD },
+		.vreg[VREG_MEM]  = { "krait2_mem", MEM_DIG_MAX_VDD },
+		.vreg[VREG_DIG]  = { "krait2_dig", MEM_DIG_MAX_VDD },
 		.vreg[VREG_HFPLL_A] = { "krait2_hfpll", 1800000 },
 	},
 	[CPU3] = {
@@ -82,9 +83,9 @@ static struct scalable scalable[] __initdata = {
 		.aux_clk_sel = 3,
 		.sec_clk_sel = 2,
 		.l2cpmr_iaddr = 0x7501,
-		.vreg[VREG_CORE] = { "krait3", 1400000 },
-		.vreg[VREG_MEM]  = { "krait3_mem", 1250000 },
-		.vreg[VREG_DIG]  = { "krait3_dig", 1250000 },
+		.vreg[VREG_CORE] = { "krait3", SC_MAX_VDD },
+		.vreg[VREG_MEM]  = { "krait3_mem", MEM_DIG_MAX_VDD },
+		.vreg[VREG_DIG]  = { "krait3_dig", MEM_DIG_MAX_VDD },
 		.vreg[VREG_HFPLL_A] = { "krait3_hfpll", 1800000 },
 	},
 	[L2] = {
@@ -230,7 +231,7 @@ static struct l2_level l2_freq_tbl_oc5[] __initdata = {
 	[11] = { {  972000, HFPLL, 1, 0x24 }, 1150000, 1150000, 7 },
 	[12] = { { 1026000, HFPLL, 1, 0x26 }, 1150000, 1150000, 7 },
 	[13] = { { 1215000, HFPLL, 1, 0x2D }, 1175000, 1175000, 7 },
-	[14] = { { 1485000, HFPLL, 1, 0x37 }, 1250000, 1250000, 8 },
+	[14] = { { 1485000, HFPLL, 1, 0x37 }, MEM_DIG_MAX_VDD, MEM_DIG_MAX_VDD, 8 },
 	{ }
 };
 

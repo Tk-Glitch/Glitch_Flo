@@ -39,13 +39,14 @@
 #include "acpuclock.h"
 #include "acpuclock-krait.h"
 #include "avs.h"
+#include "vdd_limits_8064.h"
 
 /* MUX source selects. */
 #define PRI_SRC_SEL_SEC_SRC	0
 #define PRI_SRC_SEL_HFPLL	1
 #define PRI_SRC_SEL_HFPLL_DIV2	2
 
-#define FREQ_TABLE_SIZE    48
+#define FREQ_TABLE_SIZE		44
 
 /** elementalx defs  **/
 
@@ -1019,9 +1020,6 @@ static void __init bus_init(const struct l2_level *l2_level)
 
 #ifdef CONFIG_CPU_VOLTAGE_TABLE
 
-#define HFPLL_MIN_VDD		 700000
-#define HFPLL_MAX_VDD		1400000
-
 ssize_t acpuclk_get_vdd_levels_str(char *buf) {
 
 	int i, len = 0;
@@ -1051,10 +1049,10 @@ void acpuclk_set_vdd(unsigned int khz, int vdd_uv) {
 	for (i = 0; drv.acpu_freq_tbl[i].speed.khz; i++) {
 		if (khz == 0)
 			new_vdd_uv = min(max((unsigned int)(drv.acpu_freq_tbl[i].vdd_core + vdd_uv),
-				(unsigned int)HFPLL_MIN_VDD), (unsigned int)HFPLL_MAX_VDD);
+				(unsigned int)SC_MIN_VDD), (unsigned int)SC_MAX_VDD);
 		else if ( drv.acpu_freq_tbl[i].speed.khz == khz)
 			new_vdd_uv = min(max((unsigned int)vdd_uv,
-				(unsigned int)HFPLL_MIN_VDD), (unsigned int)HFPLL_MAX_VDD);
+				(unsigned int)SC_MIN_VDD), (unsigned int)SC_MAX_VDD);
 		else 
 			continue;
 
