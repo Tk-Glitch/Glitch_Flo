@@ -110,6 +110,7 @@ static struct msm_bus_paths bw_level_tbl[] __initdata = {
 	[5] = BW_MBPS(4264), /* At least 533 MHz on bus. */
 	[6] = BW_MBPS(4660), /* At least 583 MHz on bus. */
 	[7] = BW_MBPS(4800), /* At least 600 MHz on bus. */
+	[8] = BW_MBPS(5000), /* At least 625 MHz on bus. */
 };
 
 static struct msm_bus_scale_pdata bus_scale_data __initdata = {
@@ -230,6 +231,25 @@ static struct l2_level l2_freq_tbl_oc5[] __initdata = {
 	[12] = { { 1026000, HFPLL, 1, 0x26 }, 1150000, 1150000, 7 },
 	[13] = { { 1188000, HFPLL, 1, 0x2C }, 1175000, 1175000, 7 },
 	[14] = { { 1512000, HFPLL, 1, 0x38 }, 1200000, 1200000, 7 },
+	{ }
+};
+
+static struct l2_level l2_freq_tbl_oc6[] __initdata = {
+	[0]  = { {  384000, PLL_8, 0, 0x00 },  950000, 1050000, 1 },
+	[1]  = { {  432000, HFPLL, 2, 0x20 }, 1050000, 1050000, 2 },
+	[2]  = { {  486000, HFPLL, 2, 0x24 }, 1050000, 1050000, 2 },
+	[3]  = { {  540000, HFPLL, 2, 0x28 }, 1050000, 1050000, 2 },
+	[4]  = { {  594000, HFPLL, 1, 0x16 }, 1050000, 1050000, 2 },
+	[5]  = { {  648000, HFPLL, 1, 0x18 }, 1050000, 1050000, 4 },
+	[6]  = { {  702000, HFPLL, 1, 0x1A }, 1150000, 1150000, 4 },
+	[7]  = { {  756000, HFPLL, 1, 0x1C }, 1150000, 1150000, 4 },
+	[8]  = { {  810000, HFPLL, 1, 0x1E }, 1150000, 1150000, 4 },
+	[9]  = { {  864000, HFPLL, 1, 0x20 }, 1150000, 1150000, 4 },
+	[10] = { {  918000, HFPLL, 1, 0x22 }, 1150000, 1150000, 7 },
+	[11] = { {  972000, HFPLL, 1, 0x24 }, 1150000, 1150000, 7 },
+	[12] = { { 1026000, HFPLL, 1, 0x26 }, 1150000, 1150000, 7 },
+	[13] = { { 1188000, HFPLL, 1, 0x2C }, 1175000, 1175000, 7 },
+	[14] = { { 1620000, HFPLL, 1, 0x3C }, 1200000, 1200000, 8 },
 	{ }
 };
 
@@ -850,6 +870,8 @@ static int __init get_opt_level(char *l2_opt)
 		opt_bin = 4;
 	} else if (strcmp(l2_opt, "5") == 0) {
 		opt_bin = 5;
+	} else if (strcmp(l2_opt, "6") == 0) {
+		opt_bin = 6;
 	} else {
 		opt_bin = 0;
 	}
@@ -888,6 +910,11 @@ static int __init acpuclk_8064_probe(struct platform_device *pdev)
 	if (opt_bin == 5) {
 		acpuclk_8064_params.l2_freq_tbl = l2_freq_tbl_oc5;
 		acpuclk_8064_params.l2_freq_tbl_size = sizeof(l2_freq_tbl_oc5);
+	}
+
+	if (opt_bin == 6) {
+		acpuclk_8064_params.l2_freq_tbl = l2_freq_tbl_oc6;
+		acpuclk_8064_params.l2_freq_tbl_size = sizeof(l2_freq_tbl_oc6);
 	}
 
 
