@@ -1,8 +1,8 @@
-<b>Glitch kernel for flo</b>
+<b>Glitch kernel "CAF" for flo</b>
 
 - Based on CyanogenMod 3.4.0 kernel source for MSM devices updated to linux 3.4.1
 - CPU OC up to 2.3Ghz with OV/UV support
-- L2/bus speed OC up to 1.43GHz / 4.8GBPS
+- L2/bus speed OC up to 1.49GHz / 4.96GBPS
 - GPU OC up to 627 MHz
 	- Faux Simple GPU governor support
 
@@ -18,6 +18,7 @@
 - Magnetic on/off
 
 - FauxSound support
+- Dynamic Fsync by Faux123
 - USB fast charging support
 - USB OTG charge hack support by flar2
 
@@ -27,4 +28,3 @@
 - Kexec-hardboot support
 
 - Compiled with latest SaberMod 4.8.x toolchain / -O3 (optimize a lot)
-
