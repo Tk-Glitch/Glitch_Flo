@@ -84,7 +84,7 @@ cd release/aroma
 if [ "$aosp" = "y" ] ; then
 
 mkdir -p $KERNEL_DIR/release/Flashable-flo-AOSPfriendly
-REL=Glitch-N7-r$counter-AOSP.zip
+REL=Glitch-N7-r$counter-CAF4AOSP.zip
 
 	zip -q -r ${REL} boot config META-INF system
 	#sha256sum ${REL} > ${REL}.sha256sum
