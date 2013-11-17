@@ -54,8 +54,8 @@ build ()
 {
 
     local target=flo
-    echo "Building for flo"
-    local target_dir="$BUILD_DIR/flo"
+    echo "Building for N7"
+    local target_dir="$BUILD_DIR/N7"
     local module
     rm -fr "$target_dir"
     mkdir -p "$target_dir"
@@ -84,23 +84,19 @@ cd release/aroma
 if [ "$aosp" = "y" ] ; then
 
 mkdir -p $KERNEL_DIR/release/Flashable-flo-AOSPfriendly
-REL=Glitch-flo-r$counter-AOSP.zip
+REL=Glitch-N7-r$counter-AOSP.zip
 
 	zip -q -r ${REL} boot config META-INF system
 	#sha256sum ${REL} > ${REL}.sha256sum
 	mv ${REL}* $KERNEL_DIR/release/Flashable-flo-AOSPfriendly/
 else
 
-counter=$((counter + 1))
-
 mkdir -p $KERNEL_DIR/release/Flashable-flo-CMfriendly
-REL=Glitch-flo-r$counter-CM.zip
+REL=Glitch-N7-r$counter-CM.zip
 
 	zip -q -r ${REL} boot config META-INF system
 	#sha256sum ${REL} > ${REL}.sha256sum
 	mv ${REL}* $KERNEL_DIR/release/Flashable-flo-CMfriendly/
-
-echo counter=$counter > $KERNEL_DIR/../rev;
 
 fi
 
