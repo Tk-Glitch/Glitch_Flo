@@ -1,4 +1,4 @@
-<b>Glitch kernel "CAF" for flo</b>
+<b>Glitch kernel "CAF" for N7</b>
 
 - Based on CyanogenMod 3.4.0 kernel source for MSM devices updated to linux 3.4.1
 - CPU OC up to 2.3Ghz with OV/UV support
