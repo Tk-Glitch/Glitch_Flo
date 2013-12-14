@@ -34,7 +34,7 @@ ini_set("rom_name",             "Glitch kernel");
 ini_set("rom_version",          "N7-CAF");
 ini_set("rom_author",           "Tk-Glitch");
 ini_set("rom_device",           "Nexus 7 (2013)");
-ini_set("rom_date",             "November 2013");
+ini_set("rom_date",             "December 2013");
 
 ini_set("force_colorspace","rgba");
 #ini_set("dp","6");
@@ -175,6 +175,15 @@ selectbox(
 );
 
 endif;
+
+selectbox(
+  "Minimum CPU Frequency","Select minimum CPU frequency\n","@personalize","minfreq.prop",
+  "162MHz","",0,
+  "270MHz","",0,
+  "384MHz","(stock)",1,
+  "594MHz","",0,
+  "810MHz","",0
+);
 
 selectbox(
   "Select CPU optimization level","Overclocks L2 cache and bus bandwidth. If you experience instability, choose stock\n","@personalize","opt.prop",
