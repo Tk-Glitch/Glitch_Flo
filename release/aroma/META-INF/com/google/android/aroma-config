@@ -34,7 +34,7 @@ ini_set("rom_name",             "Glitch kernel");
 ini_set("rom_version",          "N7-CAF");
 ini_set("rom_author",           "Tk-Glitch");
 ini_set("rom_device",           "Nexus 7 (2013)");
-ini_set("rom_date",             "November 2013");
+ini_set("rom_date",             "December 2013");
 
 ini_set("force_colorspace","rgba");
 #ini_set("dp","6");
@@ -198,6 +198,31 @@ selectbox(
 );
 
 selectbox(
+  "My device is already Glitched","If you're already running Glitch kernel and you want to keep your actual settings, say yes\n","@personalize","glitched.prop",
+  "No","(Full install)",1,
+  "Yes","",0
+);
+
+if file_getprop("/tmp/aroma/glitched.prop","selected.0") == "1"
+then
+
+selectbox(
+  "Minimum CPU Frequency","Select minimum CPU frequency\n","@personalize","minfreq.prop",
+  "162MHz","",0,
+  "270MHz","",0,
+  "384MHz","(stock)",1,
+  "594MHz","",0,
+  "810MHz","",0
+);
+
+selectbox(
+  "Hotplug driver","Select default hotplug driver to use\n","@personalize","hotplug.prop",
+  "Qualcomm mpdecision","(stock)",0,
+  "Showp1984 msm_mpdecision","",1,
+  "Faux123 Intelli-plug","",0
+);
+
+selectbox(
   "Select thermal settings","Determines the amount of thermal throttling for the CPU\n","@personalize","thermal.prop",
   "run cool","more thermal throttling",0,
   "default","default thermal throttling",1,
@@ -212,8 +237,8 @@ selectbox(
 
 selectbox(
   "Select Battery life eXtender settings","Sets the charge voltage of the battery to extend its lifespan\n","@personalize","ble.prop",
-  "4.3V","(100% - stock)",0,
-  "4.2V","(93% - balanced)",1,
+  "4.3V","(100% - stock)",1,
+  "4.2V","(93% - balanced)",0,
   "4.1V","(83% - conservative)",0,
   "4.0V","(73% - very conservative)",0
 );
@@ -222,11 +247,12 @@ checkbox(
   "Other settings","Select the mods you want to install\n","@personalize","mods.prop",
   "Sweep2Wake","Sweep across buttons to sleep/wake device",0,
   "Sweep2Sleep Only","Sweep across buttons to sleep device",1,
-  "S2W/DT2W power toggle","Makes the power button toggle s2w/dt2w",0,
-  "Shortsweep","Shorter sweep distance for Sweep2Wake",1,
+  "S2W/DT2W power toggle","Makes the power button toggle s2w/dt2w",1,
+  "Shortsweep","Shorter sweep distance for Sweep2Wake",0,
   "DoubleTap2Wake","Double tap screen to wake device",1,
   "Disable magnetic on/off","",0,
-  "Enable USB OTG+Charge mode","Allows charging in USB host mode (disables self-powered OTG)",0
+  "Enable USB OTG+Charge mode","Allows charging in USB host mode (disables self-powered OTG)",0,
+  "Enable input-boost","Improves smoothness with kernel-side hotplug drivers",1
 );
 
 if file_getprop("/tmp/aroma/mods.prop","item.0.1") == "1" && file_getprop("/tmp/aroma/mods.prop","item.0.2") == "1"
@@ -248,6 +274,20 @@ selectbox(
   "Portrait only","",0,
   "Landscape only","",0
 );
+endif;
+
+endif;
+
+if file_getprop("/tmp/aroma/glitched.prop","selected.0") == "2"
+then
+
+alert(
+  "WARNING:",
+  "You MUST already have Glitch kernel installed and running on this device or this will fail !",
+  "@alert",
+  "OK"
+);
+
 endif;
 
 menubox(

@@ -3,6 +3,34 @@
 #Build config file
 CONFIGFILE="/tmp/settings.conf"
 
+#MINFREQ
+MINF=`cat /tmp/aroma/minfreq.prop | cut -d '=' -f2`
+echo -e "\n\n##### Minimum frequency #####\n# 1 162 MHz" >> $CONFIGFILE
+echo -e "\n# 2 270 MHz\n# 3 384 MHz (stock)\n# 4 594 MHz\n# 5 810 MHz\n" >> $CONFIGFILE
+if [ $MINF = 2 ]; then
+  echo "MINF=2" >> $CONFIGFILE;
+elif [ $MINF = 3 ]; then
+  echo "MINF=3" >> $CONFIGFILE;
+elif [ $MINF = 4 ]; then
+  echo "MINF=4" >> $CONFIGFILE;
+elif [ $MINF = 5 ]; then
+  echo "MINF=5" >> $CONFIGFILE;
+else
+  echo "MINF=1" >> $CONFIGFILE;
+fi
+
+#HOTPLUGDRV
+HOTPLUGDRV=`cat /tmp/aroma/hotplug.prop | cut -d '=' -f2`
+echo -e "\n\n##### Hotplug driver Settings #####\n# 0 to enable qualcomm mpdecision (stock)" >> $CONFIGFILE
+echo -e "# 1 to enable msm_mpdecision (recommended)\n# 2 to enable intelli-plug\n" >> $CONFIGFILE
+if [ $HOTPLUGDRV = 2 ]; then
+  echo "HOTPLUGDRV=1" >> $CONFIGFILE;
+elif [ $HOTPLUGDRV = 3 ]; then
+  echo "HOTPLUGDRV=2" >> $CONFIGFILE;
+else
+  echo "HOTPLUGDRV=0" >> $CONFIGFILE;
+fi
+
 #S2W
 S2W=`grep "item.0.1" /tmp/aroma/mods.prop | cut -d '=' -f2`
 S2S=`grep "item.0.2" /tmp/aroma/mods.prop | cut -d '=' -f2`
@@ -75,6 +103,15 @@ if [ $OTGCM = 1 ]; then
   echo "OTGCM=1" >> $CONFIGFILE;
 else
   echo "OTGCM=0" >> $CONFIGFILE;
+fi
+
+#Input-boost
+INPUTBOOST=`grep "item.0.8" /tmp/aroma/mods.prop | cut -d '=' -f2`
+echo -e "\n\n##### Input-booster Settings ######\n# 1 to enable Input-boost\n# 0 to disable Input-boost\n" >> $CONFIGFILE
+if [ $INPUTBOOST = 1 ]; then
+  echo "INPUTBOOST=1" >> $CONFIGFILE;
+else
+  echo "INPUTBOOST=0" >> $CONFIGFILE;
 fi
 
 #THERMAL
