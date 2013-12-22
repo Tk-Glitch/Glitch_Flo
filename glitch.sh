@@ -91,12 +91,12 @@ REL=Glitch-N7-r$counter-CAF4AOSP.zip
 	mv ${REL}* $KERNEL_DIR/release/Flashable-flo-AOSPfriendly/
 else
 
-mkdir -p $KERNEL_DIR/release/Flashable-flo-CMfriendly
-REL=Glitch-N7-r$counter-CM.zip
+mkdir -p $KERNEL_DIR/release/Flashable-flo-CM11
+REL=Glitch-N7-r$counter-CM11.zip
 
 	zip -q -r ${REL} boot config META-INF system
 	#sha256sum ${REL} > ${REL}.sha256sum
-	mv ${REL}* $KERNEL_DIR/release/Flashable-flo-CMfriendly/
+	mv ${REL}* $KERNEL_DIR/release/Flashable-flo-CM11/
 
 fi
 
@@ -121,7 +121,7 @@ if [ "$1" = clean ] ; then
 else
 
 if [ "$1" = cleank ] ; then
-    rm -fr "$KERNEL_DIR"/release/Flashable-flo-CMfriendly/*
+    rm -fr "$KERNEL_DIR"/release/Flashable-flo-CM11/*
     rm -fr "$KERNEL_DIR"/release/Flashable-flo-AOSPfriendly/*
     echo "Built kernels cleaned"
 
