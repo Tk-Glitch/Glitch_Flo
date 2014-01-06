@@ -21,7 +21,7 @@
 #           amarullz - xda-developers
 #           http://www.amarullz.com/
 #
-#       Binary Version  : 2.70B6
+#       Binary Version  : 2.70B
 #       Binary Codename : Flamboyan
 #
 ### INFO:
@@ -34,7 +34,7 @@ ini_set("rom_name",             "Glitch kernel");
 ini_set("rom_version",          "N7-CAF");
 ini_set("rom_author",           "Tk-Glitch");
 ini_set("rom_device",           "Nexus 7 (2013)");
-ini_set("rom_date",             "December 2013");
+ini_set("rom_date",             "January 2014");
 
 ini_set("force_colorspace","rgba");
 #ini_set("dp","6");
@@ -232,6 +232,7 @@ selectbox(
 selectbox(
   "GPU max frequency","Select the GPU's max frequency\n","@personalize","gpuclock.prop",
   "320MHz","(powersaving)",0,
+  "400MHz","(stock)",0,
   "450MHz","(improved)",1,
   "504MHz","(balanced)",0,
   "545MHz","(fast)",0,
