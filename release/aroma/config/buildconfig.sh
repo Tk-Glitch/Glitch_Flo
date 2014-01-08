@@ -108,7 +108,9 @@ fi
 #Input-boost
 INPUTBOOST=`grep "item.0.8" /tmp/aroma/mods.prop | cut -d '=' -f2`
 echo -e "\n\n##### Input-booster Settings ######\n# 1 to enable Input-boost\n# 0 to disable Input-boost\n" >> $CONFIGFILE
-if [ $INPUTBOOST = 1 ]; then
+if [ $HOTPLUGDRV = 1 ]; then
+  echo "INPUTBOOST=0" >> $CONFIGFILE;
+elif [ $INPUTBOOST = 1 ]; then
   echo "INPUTBOOST=1" >> $CONFIGFILE;
 else
   echo "INPUTBOOST=0" >> $CONFIGFILE;
@@ -163,6 +165,26 @@ if [ $GPU_GOV = 2 ]; then
   echo "GPU_GOV=2" >> $CONFIGFILE;
 else
   echo "GPU_GOV=1" >> $CONFIGFILE;
+fi
+
+#GPU UV
+GPU_UV=`cat /tmp/aroma/gpuuv.prop | cut -d '=' -f2`
+echo -e "\n\n##### GPU Undervolting #####\n# 1 Stock\n# 2 -25mV" >> $CONFIGFILE
+echo -e "\n# 3 -50mV\n# 4 -75mV\n# 5 -100mV\n# 6 -125mV\n# 7 -150mV\n" >> $CONFIGFILE
+if [ $GPU_UV = 2 ]; then
+  echo "GPU_UV=2" >> $CONFIGFILE;
+elif [ $GPU_UV = 3 ]; then
+  echo "GPU_UV=3" >> $CONFIGFILE;
+elif [ $GPU_UV = 4 ]; then
+  echo "GPU_UV=4" >> $CONFIGFILE;
+elif [ $GPU_UV = 5 ]; then
+  echo "GPU_UV=5" >> $CONFIGFILE;
+elif [ $GPU_UV = 6 ]; then
+  echo "GPU_UV=6" >> $CONFIGFILE;
+elif [ $GPU_UV = 7 ]; then
+  echo "GPU_UV=7" >> $CONFIGFILE;
+else
+  echo "GPU_UV=1" >> $CONFIGFILE;
 fi
 
 #Battery life extender
