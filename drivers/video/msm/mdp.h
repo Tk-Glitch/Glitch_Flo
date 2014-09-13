@@ -833,12 +833,10 @@ int mdp_clk_round_rate(u32 rate);
 unsigned long mdp_get_core_clk(void);
 
 #ifdef CONFIG_MSM_BUS_SCALING
-int mdp_bus_scale_update_request(u64 ab_p0, u64 ib_p0, u64 ab_p1, u64 ib_p1);
+int mdp_bus_scale_update_request(u64 ab, u64 ib);
 #else
-static inline int mdp_bus_scale_update_request(u64 ab_p0,
-					       u64 ib_p0,
-					       u64 ab_p1,
-					       u64 ib_p1)
+static inline int mdp_bus_scale_update_request(u64 ab,
+					       u64 ib)
 {
 	return 0;
 }
@@ -940,13 +938,11 @@ static inline void mdp_vid_quant_set(void)
 #define lut2g(lut) ((lut & G_MASK) >> G_SHIFT)
 #define lut2b(lut) ((lut & B_MASK) >> B_SHIFT)
 
-#ifdef CONFIG_LCD_KCAL
 #define NUM_QLUT  256
 #define MAX_KCAL_V (NUM_QLUT-1)
 #define scaled_by_kcal(rgb, kcal) \
 		(((((unsigned int)(rgb) * (unsigned int)(kcal)) << 16) / \
 		(unsigned int)MAX_KCAL_V) >> 16)
-#endif
 int mdp_preset_lut_update_lcdc(struct fb_cmap *cmap, uint32_t *internal_lut);
 #endif
 #endif /* MDP_H */

@@ -180,35 +180,12 @@ enum msm_sensor_type {
 	YUV_SENSOR,
 };
 
-#ifdef CONFIG_MSM_CAMERA
-enum camera_vreg_type {
-       REG_LDO,
-       REG_VS,
-       REG_GPIO,
-       REG_MAX
-};
-
-struct camera_vreg_t {
-       const char *reg_name;
-       enum camera_vreg_type type;
-       int min_voltage;
-       int max_voltage;
-       int op_mode;
-};
-#endif
-
 struct msm_gpio_set_tbl {
 	unsigned gpio;
 	unsigned long flags;
 	uint32_t delay;
 };
 
-#ifdef CONFIG_MSM_CAMERA
-struct msm_camera_csi_lane_params {
-	uint16_t csi_lane_assign;
-	uint16_t csi_lane_mask;
-};
-#endif
 struct msm_camera_gpio_num_info {
 	uint16_t gpio_num[2];
 };
@@ -522,7 +499,9 @@ struct msm_fb_platform_data {
 	int (*allow_set_offset)(void);
 	char prim_panel_name[PANEL_NAME_MAX_LEN];
 	char ext_panel_name[PANEL_NAME_MAX_LEN];
+#ifdef CONFIG_UPDATE_LCDC_LUT
 	int (*update_lcdc_lut)(void);
+#endif
 };
 
 struct msm_hdmi_platform_data {

@@ -45,6 +45,7 @@
 #ifdef CONFIG_MSM_DSPS
 #include <mach/msm_dsps.h>
 #endif
+#include <linux/android_pmem.h>
 #include <linux/gpio.h>
 #include <linux/delay.h>
 #include <mach/mdm.h>
@@ -3134,9 +3135,3 @@ struct platform_device msm8660_iommu_domain_device = {
 		.platform_data = &msm8660_iommu_domain_pdata,
 	}
 };
-
-struct platform_device msm8660_pm_8x60 = {
-	.name		= "pm-8x60",
-	.id		= -1,
-};
-

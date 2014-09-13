@@ -892,7 +892,7 @@ static void kgsl_pwrctrl_busy_time(struct kgsl_device *device, bool on_time)
 	}
 }
 
-void kgsl_pwrctrl_clk(struct kgsl_device *device, int state,
+static void kgsl_pwrctrl_clk(struct kgsl_device *device, int state,
 					  int requested_state)
 {
 	struct kgsl_pwrctrl *pwr = &device->pwrctrl;
@@ -954,7 +954,7 @@ void kgsl_pwrctrl_clk(struct kgsl_device *device, int state,
 	}
 }
 
-void kgsl_pwrctrl_axi(struct kgsl_device *device, int state)
+static void kgsl_pwrctrl_axi(struct kgsl_device *device, int state)
 {
 	struct kgsl_pwrctrl *pwr = &device->pwrctrl;
 
@@ -991,7 +991,7 @@ void kgsl_pwrctrl_axi(struct kgsl_device *device, int state)
 	}
 }
 
-void kgsl_pwrctrl_pwrrail(struct kgsl_device *device, int state)
+static void kgsl_pwrctrl_pwrrail(struct kgsl_device *device, int state)
 {
 	struct kgsl_pwrctrl *pwr = &device->pwrctrl;
 

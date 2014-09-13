@@ -1,38 +1,57 @@
 #!/bin/bash
 
-# Glitch kernel build-script
-#
-# clean : clean the build directory.
-# cleank : clean the built kernel packages
-# aosp : build an aosp compatible kernel
+# Glitch kernel build-script (Aroma Edition)	#
+#					  	#
+# Options :				  	#
+#					  	#
+# clean : clean the build directory       	#
+# cleank : clean the built kernel packages	#
+#################################################
 
-# CM repo path :
-repo=~/android/system
+############## Basic configuration ##############
 
-# Toolchain :
-export ARCH="arm"
-#export CROSS_PREFIX="$repo/prebuilts/gcc/linux-x86/arm/arm-eabi-4.6/bin/arm-eabi-"
-#export CROSS_PREFIX="$repo/prebuilts/gcc/linux-x86/arm/linaro_4.8.2-2013.09/bin/arm-gnueabi-"
-export CROSS_PREFIX="$repo/prebuilts/gcc/linux-x86/arm/sabermod-androideabi-4.8.3/bin/arm-linux-androideabi-"
+# Device options :
+	target_name="N7" #defines the flashable zip device name
+	target_variant="-CM" #defines the flashable zip additional name for variants
+	target_device="N7-2013" #defines the name of device-related folders (can be the same as $target_name)
+	target_defconfig="Glitch_flo_defconfig" #defines the config to use for the build
+
+# Toolchain selection :
+# (default path is "kernel_tree_folder/../toolchains")
+# -------linux-x86
+	#export CROSS_PREFIX="arm-eabi-4.6/bin/arm-eabi-"
+	#export CROSS_PREFIX="sabermod-androideabi-4.8.3/bin/arm-linux-androideabi-"
+	#export CROSS_PREFIX="arm-cortex_a15-linux-gnueabihf-linaro_4.8.3-2014.01/bin/arm-cortex_a15-linux-gnueabihf-"
+	#export CROSS_PREFIX="arm-cortex_a15-linux-gnueabihf-linaro_4.9.1-2014.05/bin/arm-cortex_a15-linux-gnueabihf-"
+	export CROSS_PREFIX="arm-cortex_a15-linux-gnueabihf-linaro_4.9.2-2014.08/bin/arm-cortex_a15-linux-gnueabihf-"
+
+# -------darwin-x86
+	#export CROSS_PREFIX=""
+
+########## End of basic configuration ############
 
 setup ()
 {
-
-    if [ x = "x$repo" ] ; then
-        echo "Android build environment must be configured"
-        exit 1
-    fi
-    . "$repo"/build/envsetup.sh
+function mka() {
+    case `uname -s` in
+        Darwin)
+            make -j `sysctl hw.ncpu|cut -d" " -f2` "$@"
+            ;;
+        *)
+            schedtool -B -n 1 -e ionice -n 1 make -j `cat /proc/cpuinfo | grep "^processor" | wc -l` "$@"
+            ;;
+    esac
+};
 
 #   Arch-dependent definitions
     case `uname -s` in
         Darwin)
             KERNEL_DIR="$(dirname "$(greadlink -f "$0")")"
-            CROSS_PREFIX="$repo/prebuilts/gcc/darwin-x86/arm/arm-eabi-4.8/bin/arm-eabi-"
+            CROSS_PREFIX="$KERNEL_DIR/../toolchains/$CROSS_PREFIX"
             ;;
         *)
             KERNEL_DIR="$(dirname "$(readlink -f "$0")")"
-            CROSS_PREFIX="$CROSS_PREFIX"
+            CROSS_PREFIX="$KERNEL_DIR/../toolchains/$CROSS_PREFIX"
             ;;
     esac
 
@@ -42,7 +61,7 @@ setup ()
         CCACHE=ccache
         CCACHE_BASEDIR="$KERNEL_DIR"
         CCACHE_COMPRESS=1
-        CCACHE_DIR="$repo/kernel/Asus/.ccache"
+        CCACHE_DIR="$KERNEL_DIR/../.ccache"
         export CCACHE_DIR CCACHE_COMPRESS CCACHE_BASEDIR
     else
         CCACHE=""
@@ -52,22 +71,39 @@ setup ()
 
 build ()
 {
-
-    local target=flo
-    echo "Building for N7"
-    local target_dir="$BUILD_DIR/N7"
+    export ARCH="arm"
+    local target=$target_device
+    echo "-----------------------------------------"
+    echo "Building for $target_device"
+    local target_dir="$BUILD_DIR/$target_device"
     local module
     rm -fr "$target_dir"
+    rm -f $KERNEL_DIR/tmp_$target_defconfig
+    rm -f $KERNEL_DIR/arch/arm/configs/release_$target_defconfig
     mkdir -p "$target_dir"
 
-    mka -C "$KERNEL_DIR" O="$target_dir" cyanogen_flo_defconfig HOSTCC="$CCACHE gcc"
+. $KERNEL_DIR/../rev
+
+counter=$((counter + 1))
+
+echo "-----------------------------------------"
+echo "Write release number in config (r"$counter")"
+releasenumber='CONFIG_LOCALVERSION="-Glitch-N7-CM-r'$counter'"'
+cp arch/arm/configs/$target_defconfig tmp_$target_defconfig;
+sed "43s/.*/$releasenumber/g" tmp_$target_defconfig > release_$target_defconfig;
+mv release_$target_defconfig arch/arm/configs/release_$target_defconfig
+rm -f $KERNEL_DIR/tmp_$target_defconfig
+
+    mka -C "$KERNEL_DIR" O="$target_dir" release_$target_defconfig HOSTCC="$CCACHE gcc"
     mka -C "$KERNEL_DIR" O="$target_dir" HOSTCC="$CCACHE gcc" CROSS_COMPILE="$CCACHE $CROSS_PREFIX" zImage modules
 
 [[ -d release ]] || {
+	echo "-----------------------------------------"
 	echo "must be in kernel root dir"
 	exit 1;
 }
 
+echo "-----------------------------------------"
 echo "copying modules and zImage"
 mkdir -p $KERNEL_DIR/release/aroma/system/lib/modules/
 cd $target_dir
@@ -76,34 +112,32 @@ find -name '*.ko' -exec cp -av {} $KERNEL_DIR/release/aroma/system/lib/modules/ 
 cd $KERNEL_DIR
 mv $target_dir/arch/arm/boot/zImage $KERNEL_DIR/release/aroma/boot/glitch.zImage
 
+cd $KERNEL_DIR
+rm -f arch/arm/configs/release_$target_defconfig
+echo "-----------------------------------------"
+echo "Setting date in Aroma conf ("$(date +%B)" "$(date +%e)" "$(date +%Y)")"
+AromaDateReplace='ini_set("rom_date",             "'$(date +%B)' '$(date +%e)' '$(date +%Y)'");'
+sed "37s/.*/$AromaDateReplace/g" ./release/aroma/META-INF/com/google/android/aroma-config > ./aroma-config.tmp;
+mv ./aroma-config.tmp ./release/aroma/META-INF/com/google/android/aroma-config
+
+echo "-----------------------------------------"
 echo "packaging it up"
 cd release/aroma
 
-. $KERNEL_DIR/../rev
+mkdir -p $KERNEL_DIR/release/$target_device
+REL=Glitch-$target_name-r$counter$target_variant.zip
 
-if [ "$aosp" = "y" ] ; then
-
-mkdir -p $KERNEL_DIR/release/Flashable-flo-AOSPfriendly
-REL=Glitch-N7-r$counter-CAF4AOSP.zip
-
-	zip -q -r ${REL} boot config META-INF system
+	zip -q -r ${REL} boot config META-INF system wifi_mod
 	#sha256sum ${REL} > ${REL}.sha256sum
-	mv ${REL}* $KERNEL_DIR/release/Flashable-flo-AOSPfriendly/
-else
+	mv ${REL}* $KERNEL_DIR/release/$target_device/
 
-mkdir -p $KERNEL_DIR/release/Flashable-flo-CM11
-REL=Glitch-N7-r$counter-CM11.zip
-
-	zip -q -r ${REL} boot config META-INF system
-	#sha256sum ${REL} > ${REL}.sha256sum
-	mv ${REL}* $KERNEL_DIR/release/Flashable-flo-CM11/
-
-fi
+#Variant has to use the same rev number as base
+#echo counter=$counter > $KERNEL_DIR/../rev;
 
 rm boot/glitch.zImage
 rm -r system/lib/modules/*
-cd $KERNEL_DIR
-echo ""
+
+echo "-----------------------------------------"
 echo ${REL}
 }
     
@@ -115,43 +149,26 @@ if [ "$1" = clean ] ; then
     rm `find ./ -name '*.*~'` -rf
     rm `find ./ -name '*~'` -rf
     cd $KERNEL_DIR
-    echo ""
-    echo "Old build cleaned"
+    rm -f $KERNEL_DIR/tmp_$target_defconfig
+    rm -f arch/arm/configs/release_$target_defconfig
+    echo "-----------------------------"
+    echo "Previous build folder cleaned"
+    echo "-----------------------------"
 
 else
 
 if [ "$1" = cleank ] ; then
-    rm -fr "$KERNEL_DIR"/release/Flashable-flo-CM11/*
-    rm -fr "$KERNEL_DIR"/release/Flashable-flo-AOSPfriendly/*
+    rm -fr "$KERNEL_DIR"/release/$target_device/*
+    echo "---------------------"
     echo "Built kernels cleaned"
-
-else
-
-if [ "$1" = aosp ] ; then
-
-aosp="y"
-
-	git apply ../CMpatch
-    echo "--------------------------------------------------------"
-    echo "------------Patched tree for AOSP compat----------------"
-    echo "--------------------------------------------------------"
-
-time {
-		build flo
-}
-
-	git apply --reverse ../CMpatch
-    echo "--------------------------------------------------------"
-    echo "-----------Patched tree back to CM compat---------------"
-    echo "--------------------------------------------------------"
+    echo "---------------------"
 
 else
 
 time {
 
-    build flo
+    build $target_device
 
 }
-fi
 fi
 fi

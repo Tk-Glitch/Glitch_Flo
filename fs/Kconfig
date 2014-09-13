@@ -225,6 +225,7 @@ source "fs/pstore/Kconfig"
 source "fs/sysv/Kconfig"
 source "fs/ufs/Kconfig"
 source "fs/exofs/Kconfig"
+source "fs/f2fs/Kconfig"
 
 endif # MISC_FILESYSTEMS
 
@@ -286,6 +287,7 @@ config DYNAMIC_FSYNC
 	default n
 	help
 	  An experimental file sync control using Android's early suspend / late resume drivers
+
 
 config RESTRICT_ROOTFS_SLAVE
 	bool "Android: Restrict rootfs slave mountspace to /storage"

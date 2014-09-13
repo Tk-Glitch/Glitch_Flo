@@ -10,7 +10,6 @@
 #include <linux/namei.h>
 #include <linux/mm.h>
 #include <linux/module.h>
-#include <linux/kmemleak.h>
 #include "internal.h"
 
 static const struct dentry_operations proc_sys_dentry_operations;
@@ -463,6 +462,9 @@ static struct dentry *proc_sys_lookup(struct inode *dir, struct dentry *dentry,
 
 	err = ERR_PTR(-ENOMEM);
 	inode = proc_sys_make_inode(dir->i_sb, h ? h : head, p);
+	if (h)
+		sysctl_head_finish(h);
+
 	if (!inode)
 		goto out;
 
@@ -471,8 +473,6 @@ static struct dentry *proc_sys_lookup(struct inode *dir, struct dentry *dentry,
 	d_add(dentry, inode);
 
 out:
-	if (h)
-		sysctl_head_finish(h);
 	sysctl_head_finish(head);
 	return err;
 }
@@ -1214,8 +1214,6 @@ struct ctl_table_header *__register_sysctl_table(
 			 sizeof(struct ctl_node)*nr_entries, GFP_KERNEL);
 	if (!header)
 		return NULL;
-
-	kmemleak_not_leak(header);
 
 	node = (struct ctl_node *)(header + 1);
 	init_header(header, root, set, node, table);

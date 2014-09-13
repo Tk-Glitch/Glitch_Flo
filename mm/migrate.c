@@ -34,7 +34,6 @@
 #include <linux/syscalls.h>
 #include <linux/hugetlb.h>
 #include <linux/gfp.h>
-#include <trace/events/kmem.h>
 
 #include <asm/tlbflush.h>
 
@@ -146,7 +145,7 @@ static int remove_migration_pte(struct page *new, struct vm_area_struct *vma,
 	if (PageHuge(new))
 		pte = pte_mkhuge(pte);
 #endif
-	flush_dcache_page(new);
+	flush_cache_page(vma, addr, pte_pfn(pte));
 	set_pte_at(mm, addr, ptep, pte);
 
 	if (PageHuge(new)) {
@@ -181,14 +180,15 @@ static void remove_migration_ptes(struct page *old, struct page *new)
  * get to the page and wait until migration is finished.
  * When we return from this function the fault will be retried.
  */
-static void __migration_entry_wait(struct mm_struct *mm, pte_t *ptep,
-				spinlock_t *ptl)
+void migration_entry_wait(struct mm_struct *mm, pmd_t *pmd,
+				unsigned long address)
 {
-	pte_t pte;
+	pte_t *ptep, pte;
+	spinlock_t *ptl;
 	swp_entry_t entry;
 	struct page *page;
 
-	spin_lock(ptl);
+	ptep = pte_offset_map_lock(mm, pmd, address, &ptl);
 	pte = *ptep;
 	if (!is_swap_pte(pte))
 		goto out;
@@ -214,20 +214,6 @@ static void __migration_entry_wait(struct mm_struct *mm, pte_t *ptep,
 	return;
 out:
 	pte_unmap_unlock(ptep, ptl);
-}
-
-void migration_entry_wait(struct mm_struct *mm, pmd_t *pmd,
-				unsigned long address)
-{
-	spinlock_t *ptl = pte_lockptr(mm, pmd);
-	pte_t *ptep = pte_offset_map(pmd, address);
-	__migration_entry_wait(mm, ptep, ptl);
-}
-
-void migration_entry_wait_huge(struct mm_struct *mm, pte_t *pte)
-{
-	spinlock_t *ptl = &(mm)->page_table_lock;
-	__migration_entry_wait(mm, pte, ptl);
 }
 
 #ifdef CONFIG_BLOCK
@@ -982,14 +968,12 @@ int migrate_pages(struct list_head *from,
 {
 	int retry = 1;
 	int nr_failed = 0;
-	int nr_succeeded = 0;
 	int pass = 0;
 	struct page *page;
 	struct page *page2;
 	int swapwrite = current->flags & PF_SWAPWRITE;
 	int rc;
 
-	trace_migrate_pages_start(mode);
 	if (!swapwrite)
 		current->flags |= PF_SWAPWRITE;
 
@@ -1008,10 +992,8 @@ int migrate_pages(struct list_head *from,
 				goto out;
 			case -EAGAIN:
 				retry++;
-				trace_migrate_retry(retry);
 				break;
 			case 0:
-				nr_succeeded++;
 				break;
 			default:
 				/* Permanent failure */
@@ -1022,14 +1004,9 @@ int migrate_pages(struct list_head *from,
 	}
 	rc = 0;
 out:
-	if (nr_succeeded)
-		count_vm_events(PGMIGRATE_SUCCESS, nr_succeeded);
-	if (nr_failed)
-		count_vm_events(PGMIGRATE_FAIL, nr_failed);
 	if (!swapwrite)
 		current->flags &= ~PF_SWAPWRITE;
 
-	trace_migrate_pages_end(mode);
 	if (rc)
 		return rc;
 
