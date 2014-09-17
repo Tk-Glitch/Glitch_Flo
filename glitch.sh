@@ -82,7 +82,8 @@ build ()
 
 . $KERNEL_DIR/../rev
 
-counter=$((counter + 1))
+#Variant has to use the same rev number as base
+#counter=$((counter + 1))
 
 echo "-----------------------------------------"
 echo "Write release number in config (r"$counter")"
